@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Internship Copilot | Summer 2027 Finance & Wealth Management</title>
+  <title>Internship Copilot | Private Client-Side Prototype</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -289,6 +289,16 @@
       background: rgba(255, 255, 255, 0.15);
     }
 
+    .btn-danger {
+      background: var(--danger-bg);
+      color: var(--danger);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+
+    .btn-danger:hover {
+      background: rgba(239, 68, 68, 0.25);
+    }
+
     .btn-outline-gold {
       background: transparent;
       border: 1px solid var(--accent-gold);
@@ -380,6 +390,12 @@
       background: var(--accent-gold-bg);
       color: #fbbf24;
       border-color: rgba(217, 119, 6, 0.4);
+    }
+
+    .tag.tag-demo {
+      background: rgba(148, 163, 184, 0.15);
+      color: var(--text-muted);
+      border-color: rgba(148, 163, 184, 0.3);
     }
 
     .job-score-box {
@@ -570,18 +586,8 @@
     .bullet-highlight {
       background: rgba(16, 185, 129, 0.15);
       border-left: 3px solid var(--success);
-      padding: 0.2rem 0.4rem;
-      margin-bottom: 0.4rem;
-      border-radius: 2px;
-      font-family: var(--font-sans);
-      font-size: 0.85rem;
-    }
-
-    .bullet-flagged {
-      background: rgba(239, 68, 68, 0.15);
-      border-left: 3px solid var(--danger);
-      padding: 0.2rem 0.4rem;
-      margin-bottom: 0.4rem;
+      padding: 0.4rem 0.6rem;
+      margin-bottom: 0.5rem;
       border-radius: 2px;
       font-family: var(--font-sans);
       font-size: 0.85rem;
@@ -656,6 +662,16 @@
       gap: 0.5rem;
     }
 
+    /* Notice box */
+    .notice-box {
+      background: rgba(37, 99, 235, 0.1);
+      border: 1px solid rgba(37, 99, 235, 0.3);
+      padding: 0.8rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      color: #bfdbfe;
+    }
+
     /* Utility Helpers */
     .flex-row { display: flex; align-items: center; gap: 0.5rem; }
     .text-sm { font-size: 0.85rem; color: var(--text-muted); }
@@ -668,6 +684,70 @@
 </head>
 <body>
 
+  <!-- Onboarding Modal (First Launch) -->
+  <div id="onboarding-modal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 650px;">
+      <div class="modal-header">
+        <div>
+          <h3>Welcome to Internship Copilot</h3>
+          <p class="text-sm">Set up your private profile stored locally in your browser.</p>
+        </div>
+      </div>
+      <div class="modal-body">
+        <form id="onboarding-form" onsubmit="saveProfile(event)" style="display: flex; flex-direction: column; gap: 1rem;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="filter-group">
+              <label class="filter-label">Full Name *</label>
+              <input type="text" id="setup-fullName" class="form-control" required placeholder="e.g. Alex Taylor">
+            </div>
+            <div class="filter-group">
+              <label class="filter-label">Email *</label>
+              <input type="email" id="setup-email" class="form-control" required placeholder="alex@university.edu">
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="filter-group">
+              <label class="filter-label">Phone Number</label>
+              <input type="text" id="setup-phone" class="form-control" placeholder="(555) 000-0000">
+            </div>
+            <div class="filter-group">
+              <label class="filter-label">School / University *</label>
+              <input type="text" id="setup-school" class="form-control" required placeholder="e.g. NYU Stern">
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="filter-group">
+              <label class="filter-label">Major / Field of Study *</label>
+              <input type="text" id="setup-major" class="form-control" required placeholder="Finance & Data Science">
+            </div>
+            <div class="filter-group">
+              <label class="filter-label">Expected Graduation *</label>
+              <input type="text" id="setup-gradDate" class="form-control" required placeholder="May 2028">
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Preferred Job Locations (comma-separated)</label>
+            <input type="text" id="setup-locations" class="form-control" placeholder="New York NY, Chicago IL, Boston MA, Remote">
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Internship Interests</label>
+            <input type="text" id="setup-interests" class="form-control" placeholder="Private Wealth Management, Asset Management, Family Office">
+          </div>
+
+          <div class="notice-box">
+            🔒 <strong>Privacy Guarantee:</strong> All profile data, résumé text, and job history are saved exclusively in your browser's <code>localStorage</code>. No information is transmitted to external servers.
+          </div>
+
+          <button type="submit" class="btn" style="width: 100%; justify-content: center; margin-top: 0.5rem;">Save Profile & Continue</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <!-- Top Navigation Header -->
   <header>
     <div class="brand">
@@ -677,18 +757,18 @@
     </div>
 
     <nav class="nav-tabs">
-      <button class="nav-btn active" onclick="switchTab('discovery')">Discovery Engine</button>
-      <button class="nav-btn" onclick="switchTab('factbank')">Verified Fact Bank</button>
-      <button class="nav-btn" onclick="switchTab('tailor')">Resume Tailor</button>
-      <button class="nav-btn" onclick="switchTab('tracker')">Application Tracker</button>
-      <button class="nav-btn" onclick="switchTab('extension')">Autofill Assistant</button>
+      <button class="nav-btn active" onclick="switchTab('discovery', event)">Discovery Engine</button>
+      <button class="nav-btn" onclick="switchTab('factbank', event)">Profile & Fact Bank</button>
+      <button class="nav-btn" onclick="switchTab('tailor', event)">Resume Comparison</button>
+      <button class="nav-btn" onclick="switchTab('tracker', event)">Application Tracker</button>
+      <button class="nav-btn" onclick="switchTab('extension', event)">Autofill Assistant</button>
     </nav>
 
-    <div class="user-badge">
-      <div class="user-avatar">JS</div>
+    <div class="user-badge" id="header-user-badge">
+      <div class="user-avatar" id="header-avatar">--</div>
       <div>
-        <div style="font-weight: 700; line-height: 1;">Jordan Smith</div>
-        <div style="font-size: 0.675rem; color: var(--text-dim);">Graduation: May 2028</div>
+        <div style="font-weight: 700; line-height: 1;" id="header-name">Guest</div>
+        <div style="font-size: 0.675rem; color: var(--text-dim);" id="header-grad">Not Setup</div>
       </div>
     </div>
   </header>
@@ -718,7 +798,6 @@
               <label class="checkbox-label"><input type="checkbox" checked value="am" onchange="renderJobs()"> Asset & Investment Mgmt</label>
               <label class="checkbox-label"><input type="checkbox" checked value="pb" onchange="renderJobs()"> Private Banking & Family Office</label>
               <label class="checkbox-label"><input type="checkbox" value="fp" onchange="renderJobs()"> Financial Planning / RIA</label>
-              <label class="checkbox-label"><input type="checkbox" value="ib" onchange="renderJobs()"> Investment Banking / Markets</label>
             </div>
           </div>
 
@@ -733,16 +812,16 @@
           </div>
 
           <div class="filter-group">
-            <label class="filter-label">Min Match Score</label>
+            <label class="filter-label">Min Keyword Match Score</label>
             <select id="filter-min-score" class="form-select" onchange="renderJobs()">
               <option value="0">Show All Listings</option>
-              <option value="80">80%+ (High Alignment)</option>
-              <option value="90">90%+ (Top Priority)</option>
+              <option value="50">50%+ Match</option>
+              <option value="75">75%+ Match</option>
             </select>
           </div>
 
-          <div style="background: rgba(37, 99, 235, 0.1); border: 1px solid rgba(37, 99, 235, 0.3); padding: 0.8rem; border-radius: var(--radius-sm); font-size: 0.775rem; color: #bfdbfe;">
-            💡 <strong>Hard Eligibility Rule:</strong> Pre-configured to target <strong>Summer 2027</strong> positions requiring May 2028 graduation.
+          <div class="notice-box">
+            💡 <strong>Hard Eligibility Rule:</strong> Configured for <strong>Summer 2027</strong> positions requiring May 2028 graduation.
           </div>
         </aside>
 
@@ -751,10 +830,10 @@
           <div class="feed-header">
             <div>
               <h1 class="feed-title">Summer 2027 Wealth & Asset Management Roles</h1>
-              <p class="text-sm">Real-time normalized feeds & custom entry options</p>
+              <p class="text-sm">Real-time local search & custom role entries</p>
             </div>
             <div style="display: flex; gap: 0.5rem;">
-              <button class="btn btn-secondary" onclick="openModal('add-job-modal')">+ Paste Job Description</button>
+              <button class="btn btn-secondary" onclick="openModal('add-job-modal')">+ Add Job Listing</button>
             </div>
           </div>
 
@@ -771,49 +850,70 @@
         
         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
           <div>
-            <h2>Master Profile & Truth-Bank</h2>
-            <p class="text-sm">Only verified facts can be injected by the AI into tailored résumés to guarantee 100% truthful claims.</p>
+            <h2>Master Profile & Verified Fact Bank</h2>
+            <p class="text-sm">Manage your verified credentials and paste your master résumé plain text.</p>
           </div>
-          <button class="btn btn-secondary" onclick="triggerResumeUpload()">📤 Upload PDF / DOCX Resume</button>
+          <button class="btn btn-secondary" onclick="openModal('edit-profile-modal')">⚙ Edit Profile</button>
         </div>
 
         <div style="background: var(--bg-card); border: 1px solid var(--border); padding: 1.25rem; border-radius: var(--radius-md); display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
           <div>
-            <div class="filter-label">User Target</div>
-            <div style="font-weight: 700;">Jordan Smith</div>
-            <div class="text-sm">jordan.smith@university.edu</div>
+            <div class="filter-label">Candidate Name</div>
+            <div style="font-weight: 700;" id="profile-display-name">--</div>
+            <div class="text-sm" id="profile-display-email">--</div>
           </div>
           <div>
-            <div class="filter-label">Expected Graduation</div>
-            <div style="font-weight: 700;">May 2028 (BS Finance)</div>
-            <div class="text-sm">GPA: 3.82 / 4.00</div>
+            <div class="filter-label">Academic Status</div>
+            <div style="font-weight: 700;" id="profile-display-school">--</div>
+            <div class="text-sm" id="profile-display-grad">--</div>
           </div>
           <div>
-            <div class="filter-label">Fact Guardrail Status</div>
-            <div style="font-weight: 700; color: var(--success);">14 Verified Facts Active</div>
-            <div class="text-sm">0 Unverified Claims</div>
+            <div class="filter-label">Local Data Privacy</div>
+            <div style="font-weight: 700; color: var(--success);">100% Client-Side</div>
+            <div class="text-sm">Stored in localStorage</div>
           </div>
         </div>
 
-        <h3>Verified Fact Inventory</h3>
+        <!-- Master Resume Text Area -->
+        <div style="background: var(--bg-card); border: 1px solid var(--border); padding: 1.25rem; border-radius: var(--radius-md);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <h3>Master Résumé Text</h3>
+            <button class="btn btn-sm" onclick="saveResumeText()">Save Résumé Text</button>
+          </div>
+          <p class="text-sm" style="margin-bottom: 0.75rem;">Paste your plain-text résumé below. This text is used for local keyword comparison against target internship listings.</p>
+          <textarea id="master-resume-textarea" class="form-control" rows="8" placeholder="Paste full plain text résumé here (Education, Experience, Skills, Honors)..."></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h3>Verified Fact Inventory</h3>
+          <button class="btn btn-secondary btn-sm" onclick="addFactPrompt()">+ Add Verified Fact</button>
+        </div>
+
         <div id="fact-bank-list" class="fact-bank-container">
           <!-- Dynamically Populated -->
         </div>
+
+        <div style="border-top: 1px solid var(--border); padding-top: 1.5rem; margin-top: 1rem; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <h4 style="color: var(--danger);">Danger Zone</h4>
+            <p class="text-sm">Permanently wipe all saved profile data, custom roles, and local application records.</p>
+          </div>
+          <button class="btn btn-danger" onclick="clearAllData()">Delete All My Data</button>
+        </div>
+
       </div>
     </section>
 
-    <!-- VIEW 3: TAILORED RESUME EDITOR -->
+    <!-- VIEW 3: TAILORED RESUME COMPARISON -->
     <section id="view-tailor" class="view-panel">
       <div style="display: flex; flex-direction: column; gap: 1.5rem;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <div>
-            <h2>Truth-Constrained Resume Tailoring Engine</h2>
-            <p class="text-sm" id="tailor-subtitle">Selecting opportunity to align tailored bullets...</p>
+            <h2>Local Résumé Keyword Comparison</h2>
+            <p class="text-sm" id="tailor-subtitle">Select an opportunity from the Discovery tab to compare credentials.</p>
           </div>
           <div style="display: flex; gap: 0.5rem;">
-            <button class="btn btn-secondary" onclick="runTruthCheck()">🔍 Run Automated Truth-Check</button>
-            <button class="btn" onclick="exportPDF()">📄 Export ATS PDF</button>
-            <button class="btn btn-outline-gold" onclick="exportDOCX()">📝 Export DOCX</button>
+            <button class="btn btn-secondary" onclick="exportTextSummary()">📋 Copy Summary</button>
           </div>
         </div>
 
@@ -822,33 +922,33 @@
           <!-- Master Resume / Fact Source -->
           <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1rem;">
             <h4 style="margin-bottom: 0.75rem; display: flex; justify-content: space-between;">
-              <span>Master Fact Bank Source</span>
-              <span class="badge-status badge-verified">Strict Guardrail Active</span>
+              <span>Verified Fact Bank</span>
+              <span class="badge-status badge-verified">Strict Guardrail</span>
             </h4>
             <div id="master-facts-preview" style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem; color: var(--text-muted);">
               <!-- Rendered Facts -->
             </div>
           </div>
 
-          <!-- AI Tailored Live Preview -->
+          <!-- Live Comparison Preview -->
           <div class="resume-pane" id="tailored-resume-preview">
             <div class="resume-header-preview">
-              <h2 style="color: #fff; font-size: 1.3rem;">JORDAN SMITH</h2>
-              <div style="font-size: 0.8rem; color: #94a3b8;">New York, NY | (555) 234-5678 | jordan.smith@university.edu</div>
+              <h2 style="color: #fff; font-size: 1.3rem;" id="preview-user-name">NAME</h2>
+              <div style="font-size: 0.8rem; color: #94a3b8;" id="preview-user-contact">Contact Details</div>
             </div>
 
-            <div style="font-weight: 700; border-bottom: 1px solid #334155; text-transform: uppercase; margin-bottom: 0.5rem; font-size: 0.8rem; color: #93c5fd;">EDUCATION</div>
-            <div style="margin-bottom: 0.75rem;">
-              <div style="display: flex; justify-content: space-between; font-weight: 600;">
-                <span>Stern School of Business, New York University</span>
-                <span>Expected May 2028</span>
-              </div>
-              <div style="font-size: 0.85rem; font-style: italic;">Bachelor of Science in Finance, Minor in Data Science | GPA: 3.82</div>
+            <div style="font-weight: 700; border-bottom: 1px solid #334155; text-transform: uppercase; margin-bottom: 0.5rem; font-size: 0.8rem; color: #93c5fd;">ACADEMIC QUALIFICATIONS</div>
+            <div style="margin-bottom: 0.75rem;" id="preview-user-edu">
+              <!-- Dynamically rendered -->
             </div>
 
-            <div style="font-weight: 700; border-bottom: 1px solid #334155; text-transform: uppercase; margin-bottom: 0.5rem; font-size: 0.8rem; color: #93c5fd;">SELECTED EXPERIENCE</div>
+            <div style="font-weight: 700; border-bottom: 1px solid #334155; text-transform: uppercase; margin-bottom: 0.5rem; font-size: 0.8rem; color: #93c5fd;">KEYWORD MATCH ANALYSIS</div>
             <div id="tailored-experience-bullets">
-              <!-- Dynamically Populated with Rationale Tooltips -->
+              <!-- Dynamically Populated -->
+            </div>
+
+            <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(37,99,235,0.1); border-radius: 4px; font-family: var(--font-sans); font-size: 0.75rem; color: #bfdbfe;">
+              ℹ <strong>Engine Note:</strong> This comparison performs a local client-side keyword extraction. It does not fabricate experience or claim automated AI tailoring.
             </div>
           </div>
         </div>
@@ -860,8 +960,8 @@
       <div style="display: flex; flex-direction: column; gap: 1.5rem;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <div>
-            <h2>Summer 2027 Pipeline Tracker</h2>
-            <p class="text-sm">Manage status, interview deadlines, and submission history</p>
+            <h2>Summer 2027 Application Pipeline</h2>
+            <p class="text-sm">Manage status and application timelines stored locally in your browser</p>
           </div>
         </div>
 
@@ -877,10 +977,10 @@
         
         <div class="extension-banner">
           <div>
-            <div class="ext-title">⚡ Chrome Application Assistant Companion</div>
+            <div class="ext-title">⚡ Companion Autofill Preview</div>
             <p style="font-size: 0.85rem; opacity: 0.9;">Simulates client-side form detection on employer portals (Workday, Greenhouse, Lever).</p>
           </div>
-          <span style="background: rgba(255,255,255,0.2); padding: 0.3rem 0.8rem; border-radius: 99px; font-size: 0.75rem; font-weight: 700;">Manifest V3 Connected</span>
+          <span style="background: rgba(255,255,255,0.2); padding: 0.3rem 0.8rem; border-radius: 99px; font-size: 0.75rem; font-weight: 700;">Manifest V3 Architecture</span>
         </div>
 
         <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1.5rem;">
@@ -888,41 +988,87 @@
           
           <div style="display: flex; flex-direction: column; gap: 1rem;">
             <div style="display: grid; grid-template-columns: 200px 1fr 100px; gap: 1rem; align-items: center; background: rgba(0,0,0,0.2); padding: 0.75rem; border-radius: var(--radius-sm);">
-              <span style="font-weight: 600; font-size: 0.85rem;">First Name</span>
-              <input type="text" class="form-control" value="Jordan" readonly>
-              <span class="badge-status badge-verified">100% Match</span>
+              <span style="font-weight: 600; font-size: 0.85rem;">Full Name</span>
+              <input type="text" class="form-control" id="ext-preview-name" readonly>
+              <span class="badge-status badge-verified">Match</span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 200px 1fr 100px; gap: 1rem; align-items: center; background: rgba(0,0,0,0.2); padding: 0.75rem; border-radius: var(--radius-sm);">
+              <span style="font-weight: 600; font-size: 0.85rem;">Email</span>
+              <input type="text" class="form-control" id="ext-preview-email" readonly>
+              <span class="badge-status badge-verified">Match</span>
             </div>
 
             <div style="display: grid; grid-template-columns: 200px 1fr 100px; gap: 1rem; align-items: center; background: rgba(0,0,0,0.2); padding: 0.75rem; border-radius: var(--radius-sm);">
               <span style="font-weight: 600; font-size: 0.85rem;">Graduation Date</span>
-              <input type="text" class="form-control" value="05/2028" readonly>
-              <span class="badge-status badge-verified">100% Match</span>
-            </div>
-
-            <div style="display: grid; grid-template-columns: 200px 1fr 100px; gap: 1rem; align-items: center; background: rgba(0,0,0,0.2); padding: 0.75rem; border-radius: var(--radius-sm);">
-              <span style="font-weight: 600; font-size: 0.85rem;">Tailored Resume Doc</span>
-              <input type="text" class="form-control" value="Jordan_Smith_MorganStanley_PWM_2027.pdf" readonly>
-              <span class="badge-status badge-verified">Attached</span>
+              <input type="text" class="form-control" id="ext-preview-grad" readonly>
+              <span class="badge-status badge-verified">Match</span>
             </div>
 
             <div style="display: grid; grid-template-columns: 200px 1fr 100px; gap: 1rem; align-items: center; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); padding: 0.75rem; border-radius: var(--radius-sm);">
               <span style="font-weight: 600; font-size: 0.85rem; color: #fca5a5;">Sponsorship Requirement?</span>
-              <input type="text" class="form-control" value="Requires Confirmation (No Sponsorship Needed)" readonly>
-              <span class="badge-status badge-unverified">User Verification Needed</span>
+              <input type="text" class="form-control" value="Requires Manual Selection" readonly>
+              <span class="badge-status badge-unverified">Review Needed</span>
             </div>
           </div>
 
           <div style="margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; background: #0b0f19; padding: 1rem; border-radius: var(--radius-sm);">
             <div style="font-size: 0.8rem; color: var(--text-muted);">
-              🔒 <strong>Safety Guardrail:</strong> The Assistant fills fields but NEVER clicks final "Submit". Explicit manual review is mandatory.
+              🔒 <strong>Safety Rule:</strong> The extension never clicks final "Submit". Manual user review is required.
             </div>
-            <button class="btn" onclick="alert('Simulation: Fields filled safely on host tab! Please conduct final review and submit manually.')">Autofill Application Form</button>
+            <button class="btn" onclick="triggerAutofillSim()">Simulate Field Fill</button>
           </div>
         </div>
       </div>
     </section>
 
   </main>
+
+  <!-- MODAL: EDIT PROFILE -->
+  <div id="edit-profile-modal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3>Edit Profile Settings</h3>
+        <button class="btn btn-secondary btn-sm" onclick="closeModal('edit-profile-modal')">✕ Close</button>
+      </div>
+      <div class="modal-body">
+        <form id="edit-profile-form" onsubmit="updateProfileFromModal(event)" style="display: flex; flex-direction: column; gap: 1rem;">
+          <div class="filter-group">
+            <label class="filter-label">Full Name</label>
+            <input type="text" id="edit-fullName" class="form-control" required>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Email</label>
+            <input type="email" id="edit-email" class="form-control" required>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Phone</label>
+            <input type="text" id="edit-phone" class="form-control">
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">School / University</label>
+            <input type="text" id="edit-school" class="form-control" required>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Major</label>
+            <input type="text" id="edit-major" class="form-control" required>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Expected Graduation</label>
+            <input type="text" id="edit-gradDate" class="form-control" required>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Preferred Locations</label>
+            <input type="text" id="edit-locations" class="form-control">
+          </div>
+          <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1rem;">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('edit-profile-modal')">Cancel</button>
+            <button type="submit" class="btn">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 
   <!-- MODAL: JOB DETAIL & MATCH BREAKDOWN -->
   <div id="job-detail-modal" class="modal-overlay">
@@ -936,9 +1082,8 @@
       </div>
       <div class="modal-body">
         
-        <!-- Score Breakdown Component -->
         <div>
-          <h4 style="margin-bottom: 0.5rem;">Weighted Match Score Analysis</h4>
+          <h4 style="margin-bottom: 0.5rem;">Local Keyword Match Score Breakdown</h4>
           <div class="breakdown-grid" id="modal-score-breakdown">
             <!-- Populated via JS -->
           </div>
@@ -950,145 +1095,305 @@
         </div>
 
         <div>
-          <h4 style="margin-bottom: 0.5rem;">Identified Key ATS Keywords</h4>
+          <h4 style="margin-bottom: 0.5rem;">Extracted Target Keywords</h4>
           <div class="tags-row" id="modal-job-keywords">
             <!-- Keywords populated via JS -->
           </div>
         </div>
       </div>
       <div class="modal-footer">
+        <a id="modal-job-url" href="#" target="_blank" class="btn btn-secondary" style="text-decoration:none;">🔗 Open Source URL</a>
         <button class="btn btn-secondary" onclick="saveJobFromModal()">Save Job</button>
-        <button class="btn" onclick="startTailoringFromModal()">Tailor Resume for Role →</button>
+        <button class="btn" onclick="startTailoringFromModal()">Compare with Resume →</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: PASTE CUSTOM JOB -->
+  <!-- MODAL: ADD CUSTOM JOB -->
   <div id="add-job-modal" class="modal-overlay">
     <div class="modal-box" style="max-width: 600px;">
       <div class="modal-header">
-        <h3>Add Custom Internship Listing</h3>
+        <h3>Add Real / Custom Internship Listing</h3>
         <button class="btn btn-secondary btn-sm" onclick="closeModal('add-job-modal')">✕ Close</button>
       </div>
       <div class="modal-body">
         <div class="filter-group">
-          <label class="filter-label">Company Name</label>
-          <input type="text" id="custom-company" class="form-control" placeholder="e.g., UBS">
+          <label class="filter-label">Company Name *</label>
+          <input type="text" id="custom-company" class="form-control" placeholder="e.g. Goldman Sachs" required>
         </div>
         <div class="filter-group">
-          <label class="filter-label">Role Title</label>
-          <input type="text" id="custom-title" class="form-control" placeholder="e.g., Summer 2027 Wealth Management Intern">
+          <label class="filter-label">Role Title *</label>
+          <input type="text" id="custom-title" class="form-control" placeholder="e.g. Summer 2027 Wealth Management Intern" required>
         </div>
         <div class="filter-group">
-          <label class="filter-label">Sub-Sector Category</label>
-          <select id="custom-category" class="form-select">
-            <option value="wm">Wealth Management (PWM)</option>
-            <option value="am">Asset & Investment Mgmt</option>
-            <option value="pb">Private Banking / Family Office</option>
-            <option value="fp">Financial Planning / RIA</option>
-          </select>
+          <label class="filter-label">Application URL</label>
+          <input type="url" id="custom-url" class="form-control" placeholder="https://careers.company.com/job/123">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="filter-group">
+            <label class="filter-label">Sub-Sector Category</label>
+            <select id="custom-category" class="form-select">
+              <option value="wm">Wealth Management (PWM)</option>
+              <option value="am">Asset & Investment Mgmt</option>
+              <option value="pb">Private Banking / Family Office</option>
+              <option value="fp">Financial Planning / RIA</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Work Arrangement</label>
+            <select id="custom-arrangement" class="form-select">
+              <option value="Hybrid">Hybrid</option>
+              <option value="On-site">On-site</option>
+              <option value="Remote">Remote</option>
+            </select>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="filter-group">
+            <label class="filter-label">Location</label>
+            <input type="text" id="custom-location" class="form-control" placeholder="New York, NY">
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Application Deadline</label>
+            <input type="date" id="custom-deadline" class="form-control">
+          </div>
         </div>
         <div class="filter-group">
-          <label class="filter-label">Job Description Text</label>
-          <textarea id="custom-description" class="form-control" rows="5" placeholder="Paste full JD text here for automated ATS keyword extractions and match scoring..."></textarea>
+          <label class="filter-label">Job Description Text *</label>
+          <textarea id="custom-description" class="form-control" rows="5" placeholder="Paste official job description here for keyword matching..."></textarea>
         </div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" onclick="closeModal('add-job-modal')">Cancel</button>
-        <button class="btn" onclick="submitCustomJob()">Analyze & Add Role</button>
+        <button class="btn" onclick="submitCustomJob()">Add Role to Database</button>
       </div>
     </div>
   </div>
 
   <script>
-    // --- SEEDED DATASTORE FOR SUMMER 2027 WEALTH & FINANCE INTERNSHIPS ---
+    // --- DEMO SEEDED JOBS (CLEARLY LABELED) ---
+    const SEEDED_JOBS = [
+      {
+        id: 'demo-1',
+        company: 'Morgan Stanley',
+        title: '2027 Private Wealth Management Summer Analyst',
+        category: 'wm',
+        location: 'New York, NY',
+        arrangement: 'Hybrid',
+        deadline: '2026-11-15',
+        url: 'https://www.morganstanley.com/careers',
+        isDemo: true,
+        description: `The Private Wealth Management (PWM) Division at Morgan Stanley provides customized financial advice and asset allocation to ultra-high-net-worth individuals and family offices.\n\nKey Focus:\n- Asset allocation modeling, equity research, and financial planning.\n- Expected Graduation: Spring 2028.\n- Proficiency in Excel modeling, client advisory, and Bloomberg terminal basics.`,
+        keywords: ['wealth management', 'asset allocation', 'financial planning', 'excel', 'bloomberg', 'client advisory'],
+        status: 'Discovered'
+      },
+      {
+        id: 'demo-2',
+        company: 'JPMorganChase',
+        title: 'Summer 2027 Asset & Wealth Management Intern',
+        category: 'am',
+        location: 'Chicago, IL',
+        arrangement: 'On-site',
+        deadline: '2026-10-30',
+        url: 'https://careers.jpmorgan.com',
+        isDemo: true,
+        description: `Join J.P. Morgan Asset & Wealth Management to deliver solutions for global institutional and individual clients. Interns analyze equity portfolios, fixed income strategies, and risk metrics.`,
+        keywords: ['asset management', 'portfolio', 'equity', 'python', 'financial modeling', 'risk'],
+        status: 'Saved'
+      },
+      {
+        id: 'demo-3',
+        company: 'Northern Trust',
+        title: '2027 Wealth Management Advisory Intern',
+        category: 'wm',
+        location: 'Boston, MA',
+        arrangement: 'Hybrid',
+        deadline: '2026-12-01',
+        url: 'https://www.northerntrust.com/careers',
+        isDemo: true,
+        description: `Focus on wealth advisory, trust administration, and estate planning for high-net-worth families. Requires strong communication skills and analytical aptitude.`,
+        keywords: ['trust', 'estate planning', 'wealth advisory', 'client relationship', 'financial planning'],
+        status: 'Discovered'
+      },
+      {
+        id: 'demo-4',
+        company: 'Bessemer Trust',
+        title: 'Family Office & Private Banking Intern - Summer 2027',
+        category: 'pb',
+        location: 'New York, NY',
+        arrangement: 'On-site',
+        deadline: '2026-11-01',
+        url: 'https://www.bessemertrust.com',
+        isDemo: true,
+        description: `Work alongside advisors on multi-generational family office wealth strategy, tax planning support, and bespoke asset management solutions.`,
+        keywords: ['family office', 'private banking', 'tax planning', 'wealth strategy', 'asset management'],
+        status: 'Preparing'
+      }
+    ];
+
+    // --- APPLICATION STATE ---
     let state = {
       activeTab: 'discovery',
       activeJobId: null,
-      factBank: [
-        { id: 'f1', category: 'Education', content: ' Stern School of Business, New York University - BS Finance (GPA: 3.82, Exp. May 2028)', verified: true },
-        { id: 'f2', category: 'Experience', content: 'Wealth Management Summer Analyst at Regional RIA: Managed client portfolio review prep for $45M AUM across 30+ high-net-worth families.', verified: true },
-        { id: 'f3', category: 'Experience', content: 'Finance Association Portfolio Lead: Built DCF and multi-factor asset allocation models in Excel/Python for $100k student fund.', verified: true },
-        { id: 'f4', category: 'Skills', content: 'Financial Modeling, Bloomberg Market Concepts (BMC), Excel (VLOOKUP, Pivot Tables), Python, Client Relationship Management (CRM)', verified: true },
-        { id: 'f5', category: 'Certifications', content: 'FINRA Securities Industry Essentials (SIE) Exam Passed (2025)', verified: true }
-      ],
-      jobs: [
-        {
-          id: 'job-1',
-          company: 'Morgan Stanley',
-          title: '2027 Private Wealth Management Summer Analyst',
-          category: 'wm',
-          location: 'New York, NY',
-          arrangement: 'Hybrid',
-          deadline: '2026-11-15',
-          featured: true,
-          matchScore: 94,
-          scoreBreakdown: { career: '30/30', skills: '23/25', edu: '15/15', loc: '10/10', auth: '10/10', comp: '4/5', fresh: '2/5' },
-          description: `The Private Wealth Management (PWM) Division at Morgan Stanley provides highly customized financial advice and investment solutions to ultra-high-net-worth individuals, families, and foundations.\n\nQualifications:\n- Expected Graduation: Winter 2027 or Spring 2028.\n- Strong analytical skills, interest in asset allocation, capital markets, and financial planning.\n- Proven client service mindset and attention to detail.`,
-          keywords: ['Wealth Management', 'Asset Allocation', 'HNW Clients', 'Financial Planning', 'Excel', 'Securities'],
-          status: 'Discovered'
-        },
-        {
-          id: 'job-2',
-          company: 'JPMorganChase',
-          title: 'Summer 2027 Asset & Wealth Management Intern',
-          category: 'am',
-          location: 'Chicago, IL',
-          arrangement: 'On-site',
-          deadline: '2026-10-30',
-          featured: true,
-          matchScore: 89,
-          scoreBreakdown: { career: '28/30', skills: '21/25', edu: '15/15', loc: '8/10', auth: '10/10', comp: '4/5', fresh: '3/5' },
-          description: `Join J.P. Morgan Asset & Wealth Management to deliver solutions for global clients. Interns participate in portfolio strategy, equity analysis, and client advisory workflows.`,
-          keywords: ['Asset Management', 'Portfolio Strategy', 'Equity Analysis', 'Client Advisory', 'Python'],
-          status: 'Saved'
-        },
-        {
-          id: 'job-3',
-          company: 'Northern Trust',
-          title: '2027 Wealth Management Advisory Intern',
-          category: 'wm',
-          location: 'Boston, MA',
-          arrangement: 'Hybrid',
-          deadline: '2026-12-01',
-          featured: false,
-          matchScore: 85,
-          scoreBreakdown: { career: '27/30', skills: '20/25', edu: '15/15', loc: '7/10', auth: '10/10', comp: '3/5', fresh: '3/5' },
-          description: `Focus on holistic wealth management, trust administration, estate planning strategies, and portfolio construction for high-net-worth clients.`,
-          keywords: ['Trust Administration', 'Estate Planning', 'Portfolio Construction', 'HNW Solutions'],
-          status: 'Discovered'
-        },
-        {
-          id: 'job-4',
-          company: 'Bessemer Trust',
-          title: 'Family Office & Private Banking Intern - Summer 2027',
-          category: 'pb',
-          location: 'New York, NY',
-          arrangement: 'On-site',
-          deadline: '2026-11-01',
-          featured: false,
-          matchScore: 91,
-          scoreBreakdown: { career: '29/30', skills: '22/25', edu: '15/15', loc: '10/10', auth: '10/10', comp: '3/5', fresh: '2/5' },
-          description: `Bessemer Trust is a privately owned wealth management firm. Interns work alongside senior advisors on multi-generational family office wealth strategy, tax planning support, and asset management.`,
-          keywords: ['Family Office', 'Private Banking', 'Tax Planning', 'Wealth Strategy', 'Client Relations'],
-          status: 'Preparing'
-        }
-      ]
+      profile: null,
+      masterResumeText: '',
+      factBank: [],
+      jobs: []
     };
 
+    // --- INITIALIZATION ---
+    window.addEventListener('DOMContentLoaded', () => {
+      loadStateFromStorage();
+      if (!state.profile) {
+        openModal('onboarding-modal');
+      } else {
+        updateProfileUI();
+        renderJobs();
+      }
+    });
+
+    function loadStateFromStorage() {
+      const storedProfile = localStorage.getItem('copilot_profile');
+      if (storedProfile) state.profile = JSON.parse(storedProfile);
+
+      const storedResume = localStorage.getItem('copilot_resume_text');
+      if (storedResume) state.masterResumeText = storedResume;
+
+      const storedFacts = localStorage.getItem('copilot_facts');
+      if (storedFacts) {
+        state.factBank = JSON.parse(storedFacts);
+      } else {
+        // Default facts derived from profile setup or defaults
+        state.factBank = [
+          { id: 'f1', category: 'Education', content: 'Expected Graduation: May 2028', verified: true },
+          { id: 'f2', category: 'Skills', content: 'Financial Modeling & Excel Analysis', verified: true }
+        ];
+      }
+
+      const storedJobs = localStorage.getItem('copilot_jobs');
+      if (storedJobs) {
+        state.jobs = JSON.parse(storedJobs);
+      } else {
+        state.jobs = [...SEEDED_JOBS];
+      }
+
+      document.getElementById('master-resume-textarea').value = state.masterResumeText;
+    }
+
+    function saveProfile(e) {
+      e.preventDefault();
+      const profileData = {
+        fullName: document.getElementById('setup-fullName').value.trim(),
+        email: document.getElementById('setup-email').value.trim(),
+        phone: document.getElementById('setup-phone').value.trim(),
+        school: document.getElementById('setup-school').value.trim(),
+        major: document.getElementById('setup-major').value.trim(),
+        gradDate: document.getElementById('setup-gradDate').value.trim(),
+        locations: document.getElementById('setup-locations').value.trim(),
+        interests: document.getElementById('setup-interests').value.trim()
+      };
+
+      state.profile = profileData;
+      localStorage.setItem('copilot_profile', JSON.stringify(profileData));
+
+      // Update basic fact bank education
+      state.factBank[0] = {
+        id: 'f1',
+        category: 'Education',
+        content: `${profileData.school} - ${profileData.major} (Graduation: ${profileData.gradDate})`,
+        verified: true
+      };
+      saveFactsToStorage();
+
+      closeModal('onboarding-modal');
+      updateProfileUI();
+      renderJobs();
+    }
+
+    function updateProfileUI() {
+      if (!state.profile) return;
+
+      const initials = state.profile.fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'U';
+      document.getElementById('header-avatar').innerText = initials;
+      document.getElementById('header-name').innerText = state.profile.fullName;
+      document.getElementById('header-grad').innerText = `Graduation: ${state.profile.gradDate}`;
+
+      document.getElementById('profile-display-name').innerText = state.profile.fullName;
+      document.getElementById('profile-display-email').innerText = `${state.profile.email} | ${state.profile.phone}`;
+      document.getElementById('profile-display-school').innerText = `${state.profile.school} (${state.profile.major})`;
+      document.getElementById('profile-display-grad').innerText = `Expected: ${state.profile.gradDate}`;
+
+      // Extension preview sync
+      document.getElementById('ext-preview-name').value = state.profile.fullName;
+      document.getElementById('ext-preview-email').value = state.profile.email;
+      document.getElementById('ext-preview-grad').value = state.profile.gradDate;
+    }
+
+    function saveResumeText() {
+      const text = document.getElementById('master-resume-textarea').value.trim();
+      state.masterResumeText = text;
+      localStorage.setItem('copilot_resume_text', text);
+      alert('Master résumé text saved locally!');
+      renderJobs();
+    }
+
+    function saveFactsToStorage() {
+      localStorage.setItem('copilot_facts', JSON.stringify(state.factBank));
+      renderFactBank();
+    }
+
+    function saveJobsToStorage() {
+      localStorage.setItem('copilot_jobs', JSON.stringify(state.jobs));
+    }
+
+    function clearAllData() {
+      if (confirm('Are you sure you want to delete all stored profile data, custom roles, and local records?')) {
+        localStorage.clear();
+        state = { activeTab: 'discovery', activeJobId: null, profile: null, masterResumeText: '', factBank: [], jobs: [] };
+        location.reload();
+      }
+    }
+
     // --- NAVIGATION LOGIC ---
-    function switchTab(tabId) {
+    function switchTab(tabId, event) {
       state.activeTab = tabId;
       document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.view-panel').forEach(panel => panel.classList.remove('active'));
 
-      event.target.classList.add('active');
+      if (event && event.target) {
+        event.target.classList.add('active');
+      }
+
       const targetPanel = document.getElementById(`view-${tabId}`);
       if (targetPanel) targetPanel.classList.add('active');
 
       if (tabId === 'factbank') renderFactBank();
       if (tabId === 'tailor') renderTailoredResume();
       if (tabId === 'tracker') renderKanbanBoard();
+    }
+
+    // --- LOCAL KEYWORD MATCHING ENGINE ---
+    function computeLocalMatch(job) {
+      if (!state.masterResumeText && state.factBank.length === 0) return { score: 40, found: [], missing: job.keywords || [] };
+
+      const fullText = (state.masterResumeText + ' ' + state.factBank.map(f => f.content).join(' ')).toLowerCase();
+      const keywords = job.keywords || [];
+      
+      let matchedCount = 0;
+      const found = [];
+      const missing = [];
+
+      keywords.forEach(kw => {
+        if (fullText.includes(kw.toLowerCase())) {
+          matchedCount++;
+          found.push(kw);
+        } else {
+          missing.push(kw);
+        }
+      });
+
+      const score = keywords.length > 0 ? Math.round((matchedCount / keywords.length) * 100) : 50;
+      return { score, found, missing };
     }
 
     // --- RENDER DISCOVERY FEED ---
@@ -1098,10 +1403,12 @@
       const arrangement = document.getElementById('filter-location-type').value;
       const minScore = parseInt(document.getElementById('filter-min-score').value, 10);
 
-      // Filter sub-sectors checked
       const checkedCategories = Array.from(document.querySelectorAll('.checkbox-group input:checked')).map(cb => cb.value);
 
-      const filtered = state.jobs.filter(job => {
+      const filtered = state.jobs.map(job => {
+        const matchResult = computeLocalMatch(job);
+        return { ...job, matchScore: matchResult.score, matchResult };
+      }).filter(job => {
         const matchesSearch = job.title.toLowerCase().includes(searchTerm) || job.company.toLowerCase().includes(searchTerm);
         const matchesArrangement = arrangement === 'all' || job.arrangement === arrangement;
         const matchesCategory = checkedCategories.includes(job.category);
@@ -1110,61 +1417,125 @@
       });
 
       if (filtered.length === 0) {
-        container.innerHTML = `<div style="text-align:center; padding: 3rem; color: var(--text-muted); background: var(--bg-card); border-radius: var(--radius-md);">No opportunities matching criteria. Try adjusting your filters.</div>`;
+        container.innerHTML = `<div style="text-align:center; padding: 3rem; color: var(--text-muted); background: var(--bg-card); border-radius: var(--radius-md);">No opportunities found. Try adjusting your search filters or add a new job.</div>`;
         return;
       }
 
       container.innerHTML = filtered.map(job => `
-        <div class="job-card ${job.featured ? 'featured' : ''}" onclick="openJobDetail('${job.id}')">
+        <div class="job-card" onclick="openJobDetail('${job.id}')">
           <div class="job-main-info">
             <div class="company-row">
-              <span class="company-name">${job.company}</span>
+              <span class="company-name">${escapeHTML(job.company)}</span>
+              ${job.isDemo ? '<span class="tag tag-demo">Demo listing</span>' : ''}
               <span>•</span>
-              <span>${job.location} (${job.arrangement})</span>
+              <span>${escapeHTML(job.location || 'N/A')} (${escapeHTML(job.arrangement)})</span>
               <span>•</span>
-              <span style="color: var(--warning);">Deadline: ${job.deadline}</span>
+              <span style="color: var(--warning);">Deadline: ${job.deadline || 'Rolling'}</span>
             </div>
-            <div class="job-role-title">${job.title}</div>
+            <div class="job-role-title">${escapeHTML(job.title)}</div>
             <div class="tags-row">
               <span class="tag tag-priority">Summer 2027</span>
-              ${job.keywords.map(kw => `<span class="tag">${kw}</span>`).join('')}
+              ${(job.keywords || []).map(kw => `<span class="tag">${escapeHTML(kw)}</span>`).join('')}
             </div>
           </div>
           <div class="job-score-box">
             <div class="score-badge">
-              <div class="score-number ${job.matchScore < 90 ? 'med' : ''}">${job.matchScore}%</div>
-              <div class="score-label">Match Score</div>
+              <div class="score-number ${job.matchScore < 70 ? 'med' : ''}">${job.matchScore}%</div>
+              <div class="score-label">Keyword Match</div>
             </div>
-            <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); startTailoringForJob('${job.id}')">Tailor Resume</button>
+            <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); startTailoringForJob('${job.id}')">Compare Skills</button>
           </div>
         </div>
       `).join('');
     }
 
-    // --- MODAL & DETAIL HANDLERS ---
+    // --- MODALS & CUSTOM JOB ENTRY ---
     function openJobDetail(jobId) {
       const job = state.jobs.find(j => j.id === jobId);
       if (!job) return;
       state.activeJobId = jobId;
 
+      const match = computeLocalMatch(job);
+
       document.getElementById('modal-job-title').innerText = job.title;
-      document.getElementById('modal-job-company').innerText = `${job.company} | ${job.location} | Deadline: ${job.deadline}`;
+      document.getElementById('modal-job-company').innerText = `${job.company} | ${job.location || 'Location Unspecified'} | Deadline: ${job.deadline || 'Rolling'}`;
       document.getElementById('modal-job-description').innerText = job.description;
 
+      const urlBtn = document.getElementById('modal-job-url');
+      if (job.url) {
+        urlBtn.href = job.url;
+        urlBtn.style.display = 'inline-flex';
+      } else {
+        urlBtn.style.display = 'none';
+      }
+
       document.getElementById('modal-score-breakdown').innerHTML = `
-        <div class="breakdown-item"><span class="breakdown-title">Career Alignment (30%)</span><span class="breakdown-val text-green">${job.scoreBreakdown.career}</span></div>
-        <div class="breakdown-item"><span class="breakdown-title">Skills Match (25%)</span><span class="breakdown-val text-green">${job.scoreBreakdown.skills}</span></div>
-        <div class="breakdown-item"><span class="breakdown-title">Graduation Year (15%)</span><span class="breakdown-val text-green">${job.scoreBreakdown.edu}</span></div>
-        <div class="breakdown-item"><span class="breakdown-title">Location Pref (10%)</span><span class="breakdown-val">${job.scoreBreakdown.loc}</span></div>
-        <div class="breakdown-item"><span class="breakdown-title">Work Auth (10%)</span><span class="breakdown-val text-green">${job.scoreBreakdown.auth}</span></div>
+        <div class="breakdown-item"><span class="breakdown-title">Overall Match</span><span class="breakdown-val text-green">${match.score}%</span></div>
+        <div class="breakdown-item"><span class="breakdown-title">Matched Keywords</span><span class="breakdown-val">${match.found.length} / ${job.keywords.length}</span></div>
+        <div class="breakdown-item"><span class="breakdown-title">Status</span><span class="breakdown-val">${job.status || 'Discovered'}</span></div>
       `;
 
-      document.getElementById('modal-job-keywords').innerHTML = job.keywords.map(kw => `<span class="tag tag-priority">${kw}</span>`).join('');
+      document.getElementById('modal-job-keywords').innerHTML = (job.keywords || []).map(kw => {
+        const isMatched = match.found.includes(kw);
+        return `<span class="tag ${isMatched ? 'tag-priority' : ''}">${escapeHTML(kw)} ${isMatched ? '✓' : ''}</span>`;
+      }).join('');
 
       openModal('job-detail-modal');
     }
 
+    function submitCustomJob() {
+      const company = document.getElementById('custom-company').value.trim();
+      const title = document.getElementById('custom-title').value.trim();
+      const url = document.getElementById('custom-url').value.trim();
+      const category = document.getElementById('custom-category').value;
+      const arrangement = document.getElementById('custom-arrangement').value;
+      const location = document.getElementById('custom-location').value.trim() || 'New York, NY';
+      const deadline = document.getElementById('custom-deadline').value || 'Rolling';
+      const description = document.getElementById('custom-description').value.trim();
+
+      if (!company || !title || !description) {
+        alert('Please fill out Company, Title, and Description.');
+        return;
+      }
+
+      // Simple keyword extraction from description
+      const words = description.toLowerCase().match(/\b[a-z]{4,}\b/g) || [];
+      const commonFinance = ['wealth', 'management', 'asset', 'portfolio', 'finance', 'excel', 'modeling', 'equity', 'client', 'planning', 'banking', 'investment'];
+      const extractedKeywords = Array.from(new Set(words.filter(w => commonFinance.includes(w)))).slice(0, 6);
+
+      const newJob = {
+        id: 'job-' + Date.now(),
+        company,
+        title,
+        url,
+        category,
+        arrangement,
+        location,
+        deadline,
+        description,
+        isDemo: false,
+        keywords: extractedKeywords.length > 0 ? extractedKeywords : ['wealth management', 'finance'],
+        status: 'Discovered'
+      };
+
+      state.jobs.unshift(newJob);
+      saveJobsToStorage();
+      closeModal('add-job-modal');
+      renderJobs();
+      alert('Job listing saved to your local database!');
+    }
+
+    // --- PROFILE MODAL HANDLERS ---
     function openModal(modalId) {
+      if (modalId === 'edit-profile-modal' && state.profile) {
+        document.getElementById('edit-fullName').value = state.profile.fullName || '';
+        document.getElementById('edit-email').value = state.profile.email || '';
+        document.getElementById('edit-phone').value = state.profile.phone || '';
+        document.getElementById('edit-school').value = state.profile.school || '';
+        document.getElementById('edit-major').value = state.profile.major || '';
+        document.getElementById('edit-gradDate').value = state.profile.gradDate || '';
+        document.getElementById('edit-locations').value = state.profile.locations || '';
+      }
       document.getElementById(modalId).classList.add('active');
     }
 
@@ -1172,102 +1543,110 @@
       document.getElementById(modalId).classList.remove('active');
     }
 
-    function submitCustomJob() {
-      const company = document.getElementById('custom-company').value || 'Custom Firm';
-      const title = document.getElementById('custom-title').value || 'Summer 2027 Wealth Intern';
-      const category = document.getElementById('custom-category').value;
-      const description = document.getElementById('custom-description').value;
-
-      const newJob = {
-        id: 'job-' + Date.now(),
-        company,
-        title,
-        category,
-        location: 'New York, NY',
-        arrangement: 'Hybrid',
-        deadline: '2026-12-15',
-        featured: false,
-        matchScore: 88,
-        scoreBreakdown: { career: '28/30', skills: '21/25', edu: '15/15', loc: '9/10', auth: '10/10', comp: '3/5', fresh: '2/5' },
-        description,
-        keywords: ['Wealth Management', 'Financial Modeling', 'Client Advisory'],
-        status: 'Discovered'
+    function updateProfileFromModal(e) {
+      e.preventDefault();
+      state.profile = {
+        ...state.profile,
+        fullName: document.getElementById('edit-fullName').value.trim(),
+        email: document.getElementById('edit-email').value.trim(),
+        phone: document.getElementById('edit-phone').value.trim(),
+        school: document.getElementById('edit-school').value.trim(),
+        major: document.getElementById('edit-major').value.trim(),
+        gradDate: document.getElementById('edit-gradDate').value.trim(),
+        locations: document.getElementById('edit-locations').value.trim()
       };
 
-      state.jobs.unshift(newJob);
-      closeModal('add-job-modal');
-      renderJobs();
-      alert('Custom job added and analyzed against your fact bank!');
+      localStorage.setItem('copilot_profile', JSON.stringify(state.profile));
+      closeModal('edit-profile-modal');
+      updateProfileUI();
+      alert('Profile updated successfully!');
     }
 
     // --- FACT BANK LOGIC ---
     function renderFactBank() {
       const container = document.getElementById('fact-bank-list');
-      container.innerHTML = state.factBank.map(fact => `
-        <div class="fact-card ${fact.verified ? 'verified' : 'unverified'}">
+      container.innerHTML = state.factBank.map((fact, idx) => `
+        <div class="fact-card verified">
           <div>
-            <span class="filter-label">${fact.category}</span>
-            <p style="font-weight: 600; margin-top: 0.2rem;">${fact.content}</p>
+            <span class="filter-label">${escapeHTML(fact.category)}</span>
+            <p style="font-weight: 600; margin-top: 0.2rem;">${escapeHTML(fact.content)}</p>
           </div>
-          <div>
-            <span class="badge-status ${fact.verified ? 'badge-verified' : 'badge-unverified'}">
-              ${fact.verified ? 'Verified Fact' : 'Unverified'}
-            </span>
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span class="badge-status badge-verified">Verified Fact</span>
+            <button class="btn btn-danger btn-sm" onclick="removeFact(${idx})">✕</button>
           </div>
         </div>
       `).join('');
     }
 
-    function triggerResumeUpload() {
-      alert('Simulating PDF parser... Resume parsed! 5 structured bullet points verified and saved into Master Fact Bank.');
+    function addFactPrompt() {
+      const content = prompt('Enter a verified fact (e.g., "Passed SIE Exam in 2025" or "GPA: 3.8"):');
+      if (content && content.trim()) {
+        state.factBank.push({
+          id: 'f-' + Date.now(),
+          category: 'User Fact',
+          content: content.trim(),
+          verified: true
+        });
+        saveFactsToStorage();
+      }
     }
 
-    // --- TAILORING ENGINE & TRUTH GUARDRAILS ---
+    function removeFact(idx) {
+      state.factBank.splice(idx, 1);
+      saveFactsToStorage();
+    }
+
+    // --- RESUME COMPARISON VIEW ---
     function startTailoringForJob(jobId) {
       state.activeJobId = jobId;
-      // Switch tab programmatically
-      document.querySelectorAll('.nav-btn')[2].click();
+      const navButtons = document.querySelectorAll('.nav-btn');
+      if (navButtons[2]) navButtons[2].click();
     }
 
     function renderTailoredResume() {
-      const masterFactsContainer = document.getElementById('master-facts-preview');
-      const bulletsContainer = document.getElementById('tailored-experience-bullets');
-      const activeJob = state.jobs.find(j => j.id === state.activeJobId) || state.jobs[0];
+      if (!state.profile) return;
 
-      document.getElementById('tailor-subtitle').innerText = `Aligned for target role: ${activeJob.company} - ${activeJob.title}`;
-
-      // Master facts render
-      masterFactsContainer.innerHTML = state.factBank.map(f => `<div>• [${f.category}] ${f.content}</div>`).join('');
-
-      // Tailored bullets preview with changes highlighted and strictly tied to verified facts
-      bulletsContainer.innerHTML = `
-        <div style="font-size: 0.85rem; font-weight: 600; margin-top: 0.5rem; margin-bottom: 0.2rem;">Wealth Management Analyst | Regional RIA</div>
-        <div class="bullet-highlight">
-          <strong>[Aligned with ${activeJob.keywords[0] || 'WM'}]:</strong> Prepared portfolio performance and asset allocation reviews for $45M in client AUM across 30+ high-net-worth families, utilizing verified CRM software data.
-          <div style="font-size: 0.7rem; color: var(--success); font-style: italic; margin-top: 0.2rem;">✓ Fact Verified from Item #f2. No unverified claims introduced.</div>
+      document.getElementById('preview-user-name').innerText = state.profile.fullName.toUpperCase();
+      document.getElementById('preview-user-contact').innerText = `${state.profile.email} | ${state.profile.phone} | Preferred Locations: ${state.profile.locations || 'Any'}`;
+      document.getElementById('preview-user-edu').innerHTML = `
+        <div style="display: flex; justify-content: space-between; font-weight: 600;">
+          <span>${escapeHTML(state.profile.school)}</span>
+          <span>Expected ${escapeHTML(state.profile.gradDate)}</span>
         </div>
+        <div style="font-size: 0.85rem; font-style: italic;">Major: ${escapeHTML(state.profile.major)}</div>
+      `;
 
-        <div style="font-size: 0.85rem; font-weight: 600; margin-top: 0.75rem; margin-bottom: 0.2rem;">Student Investment Association | Portfolio Lead</div>
+      const activeJob = state.jobs.find(j => j.id === state.activeJobId) || state.jobs[0];
+      document.getElementById('tailor-subtitle').innerText = `Comparing master credentials against: ${activeJob.company} - ${activeJob.title}`;
+
+      document.getElementById('master-facts-preview').innerHTML = state.factBank.map(f => `<div>• [${escapeHTML(f.category)}] ${escapeHTML(f.content)}</div>`).join('');
+
+      const match = computeLocalMatch(activeJob);
+
+      document.getElementById('tailored-experience-bullets').innerHTML = `
         <div class="bullet-highlight">
-          <strong>[Keywords Included]:</strong> Modeled DCF valuations and multi-factor portfolio allocations in Excel and Python to evaluate $100k multi-asset fund strategy.
-          <div style="font-size: 0.7rem; color: var(--success); font-style: italic; margin-top: 0.2rem;">✓ Fact Verified from Item #f3. Meaning preserved.</div>
+          <strong>Matched Target Keywords (${match.found.length}):</strong> ${match.found.length > 0 ? match.found.join(', ') : 'None matched'}
+        </div>
+        <div class="bullet-highlight" style="border-left-color: var(--warning); background: rgba(245, 158, 11, 0.15);">
+          <strong>Missing Target Keywords (${match.missing.length}):</strong> ${match.missing.length > 0 ? match.missing.join(', ') : 'All keywords present in master profile'}
         </div>
       `;
     }
 
-    function runTruthCheck() {
-      alert(' Automated Truth-Check Complete:\n- 100% of resume bullets mapped to verified facts in the Fact Bank.\n- Zero hallucinated achievements detected.\n- Document approved for submission export!');
+    function exportTextSummary() {
+      const activeJob = state.jobs.find(j => j.id === state.activeJobId) || state.jobs[0];
+      const match = computeLocalMatch(activeJob);
+      const text = `Application Summary for ${activeJob.company} - ${activeJob.title}\nCandidate: ${state.profile.fullName}\nMatch Score: ${match.score}%\nMatched Keywords: ${match.found.join(', ')}`;
+      
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Summary copied to clipboard!');
+      }).catch(() => {
+        alert(text);
+      });
     }
 
-    function exportPDF() {
-      alert(`Downloading ATS-Optimized PDF for ${state.jobs.find(j => j.id === state.activeJobId)?.company || 'Target Firm'}...`);
-    }
-
-    function exportDOCX() {
-      alert(`Exporting clean single-column DOCX format...`);
-    }
-
-    // --- APPLICATION TRACKER KANBAN ---
+    // --- KANBAN TRACKER ---
     function renderKanbanBoard() {
       const board = document.getElementById('kanban-board');
       const stages = ['Discovered', 'Saved', 'Preparing', 'Ready to Apply', 'Applied'];
@@ -1282,12 +1661,12 @@
             </div>
             ${stageJobs.map(job => `
               <div class="kanban-card">
-                <div class="kanban-card-title">${job.title}</div>
-                <div class="kanban-card-company">${job.company}</div>
+                <div class="kanban-card-title">${escapeHTML(job.title)}</div>
+                <div class="kanban-card-company">${escapeHTML(job.company)}</div>
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.4rem;">
-                  <span class="tag tag-priority">${job.matchScore}% Score</span>
-                  <select onchange="updateJobStatus('${job.id}', this.value)" style="background: var(--bg-input); color: #fff; border: 1px solid var(--border); font-size: 0.7rem; padding: 0.1rem;">
-                    ${stages.map(s => `<option value="${s}" ${s === stage ? 'selected' : ''}>${s}</option>`).join('')}
+                  <span class="tag tag-priority">${computeLocalMatch(job).score}% Match</span>
+                  <select onchange="updateJobStatus('${job.id}', this.value)" style="background: var(--bg-input); color: #fff; border: 1px solid var(--border); font-size: 0.7rem; padding: 0.1rem; border-radius: 4px;">
+                    ${stages.map(s => `<option value="${s}" ${s === (job.status || 'Discovered') ? 'selected' : ''}>${s}</option>`).join('')}
                   </select>
                 </div>
               </div>
@@ -1301,6 +1680,7 @@
       const job = state.jobs.find(j => j.id === jobId);
       if (job) {
         job.status = newStatus;
+        saveJobsToStorage();
         renderKanbanBoard();
       }
     }
@@ -1314,9 +1694,14 @@
       const job = state.jobs.find(j => j.id === state.activeJobId);
       if (job) {
         job.status = 'Saved';
-        alert(`Job ${job.title} saved to tracker!`);
+        saveJobsToStorage();
+        alert(`Job "${job.title}" saved to application pipeline!`);
         closeModal('job-detail-modal');
       }
+    }
+
+    function triggerAutofillSim() {
+      alert('Autofill Assistant Simulation:\n- Form fields detected on host portal.\n- Values populated from your saved local profile.\n- Safety check: Final submission button was not clicked.');
     }
 
     function resetFilters() {
@@ -1326,8 +1711,12 @@
       renderJobs();
     }
 
-    // Initial Startup Render
-    renderJobs();
+    function escapeHTML(str) {
+      if (!str) return '';
+      return str.replace(/[&<>'"]/g, 
+        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+      );
+    }
   </script>
 </body>
 </html>
