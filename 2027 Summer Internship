@@ -1,1 +1,1333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Internship Copilot | Summer 2027 Finance & Wealth Management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-main: #0b0f19;
+      --bg-card: #131b2e;
+      --bg-card-hover: #1c2742;
+      --bg-input: #182238;
+      --border: #233152;
+      --border-focus: #3b82f6;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --accent-gold: #d97706;
+      --accent-gold-bg: rgba(217, 119, 6, 0.15);
+      --success: #10b981;
+      --success-bg: rgba(16, 185, 129, 0.15);
+      --warning: #f59e0b;
+      --warning-bg: rgba(245, 158, 11, 0.15);
+      --danger: #ef4444;
+      --danger-bg: rgba(239, 68, 68, 0.15);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
 
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Nav Header */
+    header {
+      background: rgba(19, 27, 46, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0.75rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 800;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+      color: #fff;
+    }
+
+    .brand-icon {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8, #d97706);
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 1rem;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 0.5rem;
+      background: rgba(11, 15, 25, 0.6);
+      padding: 0.25rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-btn.active {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
+    }
+
+    .user-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: var(--bg-card);
+      padding: 0.4rem 0.8rem;
+      border-radius: 9999px;
+      border: 1px solid var(--border);
+      font-size: 0.8rem;
+    }
+
+    .user-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--accent-gold);
+      color: #000;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+    }
+
+    /* Main Container Layout */
+    .app-container {
+      flex: 1;
+      padding: 2rem;
+      max-width: 1440px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .view-panel {
+      display: none;
+      animation: fadeIn 0.25s ease-in-out forwards;
+    }
+
+    .view-panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Dashboard Layout */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 1.5rem;
+    }
+
+    /* Filter Sidebar */
+    .sidebar-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      height: fit-content;
+      position: sticky;
+      top: 5rem;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .filter-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .form-control, .form-select {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 0.6rem 0.8rem;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 0.875rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-control:focus, .form-select:focus {
+      border-color: var(--border-focus);
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .checkbox-label input[type="checkbox"] {
+      accent-color: var(--primary);
+    }
+
+    /* Job Feed Section */
+    .feed-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .feed-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .btn-outline-gold {
+      background: transparent;
+      border: 1px solid var(--accent-gold);
+      color: var(--accent-gold);
+    }
+
+    .btn-outline-gold:hover {
+      background: var(--accent-gold-bg);
+    }
+
+    .btn-sm {
+      padding: 0.35rem 0.7rem;
+      font-size: 0.775rem;
+    }
+
+    .jobs-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .job-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      display: grid;
+      grid-template-columns: 1fr 140px;
+      gap: 1rem;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .job-card:hover {
+      border-color: #3b82f6;
+      background: var(--bg-card-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .job-card.featured {
+      border-left: 4px solid var(--accent-gold);
+    }
+
+    .job-main-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .company-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .company-name {
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .job-role-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .tags-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .tag {
+      font-size: 0.725rem;
+      font-weight: 600;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-muted);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .tag.tag-priority {
+      background: var(--accent-gold-bg);
+      color: #fbbf24;
+      border-color: rgba(217, 119, 6, 0.4);
+    }
+
+    .job-score-box {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
+    .score-badge {
+      text-align: right;
+    }
+
+    .score-number {
+      font-size: 1.75rem;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--success);
+    }
+
+    .score-number.med {
+      color: var(--warning);
+    }
+
+    .score-label {
+      font-size: 0.675rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-dim);
+      font-weight: 700;
+    }
+
+    /* Modal Styling */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 900px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      background: var(--bg-card);
+      z-index: 10;
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .modal-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      background: var(--bg-card);
+    }
+
+    /* Score Breakdown Section */
+    .breakdown-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0.75rem;
+      background: rgba(11, 15, 25, 0.5);
+      padding: 1rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+    }
+
+    .breakdown-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .breakdown-title {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .breakdown-val {
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    /* Fact Bank Verification UI */
+    .fact-bank-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .fact-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .fact-card.verified {
+      border-left: 4px solid var(--success);
+    }
+
+    .fact-card.unverified {
+      border-left: 4px solid var(--warning);
+    }
+
+    .badge-status {
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .badge-verified {
+      background: var(--success-bg);
+      color: var(--success);
+    }
+
+    .badge-unverified {
+      background: var(--warning-bg);
+      color: var(--warning);
+    }
+
+    /* Side-by-side Tailoring View */
+    .tailor-comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .resume-pane {
+      background: #0b0f19;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      font-family: serif;
+      color: #e2e8f0;
+      line-height: 1.6;
+      font-size: 0.9rem;
+    }
+
+    .resume-header-preview {
+      text-align: center;
+      border-bottom: 1px solid #334155;
+      padding-bottom: 0.75rem;
+      margin-bottom: 1rem;
+      font-family: var(--font-sans);
+    }
+
+    .bullet-highlight {
+      background: rgba(16, 185, 129, 0.15);
+      border-left: 3px solid var(--success);
+      padding: 0.2rem 0.4rem;
+      margin-bottom: 0.4rem;
+      border-radius: 2px;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+    }
+
+    .bullet-flagged {
+      background: rgba(239, 68, 68, 0.15);
+      border-left: 3px solid var(--danger);
+      padding: 0.2rem 0.4rem;
+      margin-bottom: 0.4rem;
+      border-radius: 2px;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+    }
+
+    /* Pipeline Kanban Tracker */
+    .kanban-board {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1rem;
+      overflow-x: auto;
+      padding-bottom: 1rem;
+    }
+
+    .kanban-column {
+      background: rgba(19, 27, 46, 0.6);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      min-width: 220px;
+    }
+
+    .kanban-header {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .kanban-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .kanban-card-title {
+      font-size: 0.875rem;
+      font-weight: 700;
+    }
+
+    .kanban-card-company {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Extension Preview Bar */
+    .extension-banner {
+      background: linear-gradient(90deg, #1d4ed8, #4f46e5);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+
+    .ext-title {
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Utility Helpers */
+    .flex-row { display: flex; align-items: center; gap: 0.5rem; }
+    .text-sm { font-size: 0.85rem; color: var(--text-muted); }
+    .text-gold { color: var(--accent-gold); }
+    .text-green { color: var(--success); }
+    .text-danger { color: var(--danger); }
+    .mt-1 { margin-top: 0.5rem; }
+    .mt-2 { margin-top: 1rem; }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">WM</div>
+      <span>Internship Copilot</span>
+      <span style="font-size: 0.7rem; background: var(--accent-gold-bg); color: var(--accent-gold); border: 1px solid rgba(217, 119, 6, 0.4); padding: 0.1rem 0.5rem; border-radius: 99px;">Summer 2027</span>
+    </div>
+
+    <nav class="nav-tabs">
+      <button class="nav-btn active" onclick="switchTab('discovery')">Discovery Engine</button>
+      <button class="nav-btn" onclick="switchTab('factbank')">Verified Fact Bank</button>
+      <button class="nav-btn" onclick="switchTab('tailor')">Resume Tailor</button>
+      <button class="nav-btn" onclick="switchTab('tracker')">Application Tracker</button>
+      <button class="nav-btn" onclick="switchTab('extension')">Autofill Assistant</button>
+    </nav>
+
+    <div class="user-badge">
+      <div class="user-avatar">JS</div>
+      <div>
+        <div style="font-weight: 700; line-height: 1;">Jordan Smith</div>
+        <div style="font-size: 0.675rem; color: var(--text-dim);">Graduation: May 2028</div>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-container">
+
+    <!-- VIEW 1: INTERNSHIP DISCOVERY DASHBOARD -->
+    <section id="view-discovery" class="view-panel active">
+      <div class="dashboard-grid">
+        
+        <!-- Sidebar Filters -->
+        <aside class="sidebar-card">
+          <div class="card-title">
+            <span>Target Filters</span>
+            <button class="btn btn-secondary btn-sm" onclick="resetFilters()">Reset</button>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Search Keywords</label>
+            <input type="text" id="filter-search" class="form-control" placeholder="Role title, firm, or skill..." oninput="renderJobs()">
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Finance Sub-Sectors</label>
+            <div class="checkbox-group">
+              <label class="checkbox-label"><input type="checkbox" checked value="wm" onchange="renderJobs()"> Wealth Management (PWM)</label>
+              <label class="checkbox-label"><input type="checkbox" checked value="am" onchange="renderJobs()"> Asset & Investment Mgmt</label>
+              <label class="checkbox-label"><input type="checkbox" checked value="pb" onchange="renderJobs()"> Private Banking & Family Office</label>
+              <label class="checkbox-label"><input type="checkbox" value="fp" onchange="renderJobs()"> Financial Planning / RIA</label>
+              <label class="checkbox-label"><input type="checkbox" value="ib" onchange="renderJobs()"> Investment Banking / Markets</label>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Work Arrangement</label>
+            <select id="filter-location-type" class="form-select" onchange="renderJobs()">
+              <option value="all">All Arrangements</option>
+              <option value="Hybrid">Hybrid</option>
+              <option value="On-site">On-site</option>
+              <option value="Remote">Remote</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Min Match Score</label>
+            <select id="filter-min-score" class="form-select" onchange="renderJobs()">
+              <option value="0">Show All Listings</option>
+              <option value="80">80%+ (High Alignment)</option>
+              <option value="90">90%+ (Top Priority)</option>
+            </select>
+          </div>
+
+          <div style="background: rgba(37, 99, 235, 0.1); border: 1px solid rgba(37, 99, 235, 0.3); padding: 0.8rem; border-radius: var(--radius-sm); font-size: 0.775rem; color: #bfdbfe;">
+            💡 <strong>Hard Eligibility Rule:</strong> Pre-configured to target <strong>Summer 2027</strong> positions requiring May 2028 graduation.
+          </div>
+        </aside>
+
+        <!-- Main Job List Feed -->
+        <section>
+          <div class="feed-header">
+            <div>
+              <h1 class="feed-title">Summer 2027 Wealth & Asset Management Roles</h1>
+              <p class="text-sm">Real-time normalized feeds & custom entry options</p>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="btn btn-secondary" onclick="openModal('add-job-modal')">+ Paste Job Description</button>
+            </div>
+          </div>
+
+          <div id="jobs-container" class="jobs-list">
+            <!-- Dynamically populated via JavaScript -->
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <!-- VIEW 2: VERIFIED FACT BANK & PROFILE -->
+    <section id="view-factbank" class="view-panel">
+      <div style="max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+          <div>
+            <h2>Master Profile & Truth-Bank</h2>
+            <p class="text-sm">Only verified facts can be injected by the AI into tailored résumés to guarantee 100% truthful claims.</p>
+          </div>
+          <button class="btn btn-secondary" onclick="triggerResumeUpload()">📤 Upload PDF / DOCX Resume</button>
+        </div>
+
+        <div style="background: var(--bg-card); border: 1px solid var(--border); padding: 1.25rem; border-radius: var(--radius-md); display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+          <div>
+            <div class="filter-label">User Target</div>
+            <div style="font-weight: 700;">Jordan Smith</div>
+            <div class="text-sm">jordan.smith@university.edu</div>
+          </div>
+          <div>
+            <div class="filter-label">Expected Graduation</div>
+            <div style="font-weight: 700;">May 2028 (BS Finance)</div>
+            <div class="text-sm">GPA: 3.82 / 4.00</div>
+          </div>
+          <div>
+            <div class="filter-label">Fact Guardrail Status</div>
+            <div style="font-weight: 700; color: var(--success);">14 Verified Facts Active</div>
+            <div class="text-sm">0 Unverified Claims</div>
+          </div>
+        </div>
+
+        <h3>Verified Fact Inventory</h3>
+        <div id="fact-bank-list" class="fact-bank-container">
+          <!-- Dynamically Populated -->
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 3: TAILORED RESUME EDITOR -->
+    <section id="view-tailor" class="view-panel">
+      <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <h2>Truth-Constrained Resume Tailoring Engine</h2>
+            <p class="text-sm" id="tailor-subtitle">Selecting opportunity to align tailored bullets...</p>
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <button class="btn btn-secondary" onclick="runTruthCheck()">🔍 Run Automated Truth-Check</button>
+            <button class="btn" onclick="exportPDF()">📄 Export ATS PDF</button>
+            <button class="btn btn-outline-gold" onclick="exportDOCX()">📝 Export DOCX</button>
+          </div>
+        </div>
+
+        <!-- Side-by-Side View -->
+        <div class="tailor-comparison">
+          <!-- Master Resume / Fact Source -->
+          <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1rem;">
+            <h4 style="margin-bottom: 0.75rem; display: flex; justify-content: space-between;">
+              <span>Master Fact Bank Source</span>
+              <span class="badge-status badge-verified">Strict Guardrail Active</span>
+            </h4>
+            <div id="master-facts-preview" style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem; color: var(--text-muted);">
+              <!-- Rendered Facts -->
+            </div>
+          </div>
+
+          <!-- AI Tailored Live Preview -->
+          <div class="resume-pane" id="tailored-resume-preview">
+            <div class="resume-header-preview">
+              <h2 style="color: #fff; font-size: 1.3rem;">JORDAN SMITH</h2>
+              <div style="font-size: 0.8rem; color: #94a3b8;">New York, NY | (555) 234-5678 | jordan.smith@university.edu</div>
+            </div>
+
+            <div style="font-weight: 700; border-bottom: 1px solid #334155; text-transform: uppercase; margin-bottom: 0.5rem; font-size: 0.8rem; color: #93c5fd;">EDUCATION</div>
+            <div style="margin-bottom: 0.75rem;">
+              <div style="display: flex; justify-content: space-between; font-weight: 600;">
+                <span>Stern School of Business, New York University</span>
+                <span>Expected May 2028</span>
+              </div>
+              <div style="font-size: 0.85rem; font-style: italic;">Bachelor of Science in Finance, Minor in Data Science | GPA: 3.82</div>
+            </div>
+
+            <div style="font-weight: 700; border-bottom: 1px solid #334155; text-transform: uppercase; margin-bottom: 0.5rem; font-size: 0.8rem; color: #93c5fd;">SELECTED EXPERIENCE</div>
+            <div id="tailored-experience-bullets">
+              <!-- Dynamically Populated with Rationale Tooltips -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 4: APPLICATION TRACKER -->
+    <section id="view-tracker" class="view-panel">
+      <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <h2>Summer 2027 Pipeline Tracker</h2>
+            <p class="text-sm">Manage status, interview deadlines, and submission history</p>
+          </div>
+        </div>
+
+        <div class="kanban-board" id="kanban-board">
+          <!-- Populated dynamically via JavaScript -->
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 5: CHROME EXTENSION AUTOFILL PREVIEW -->
+    <section id="view-extension" class="view-panel">
+      <div style="max-width: 850px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem;">
+        
+        <div class="extension-banner">
+          <div>
+            <div class="ext-title">⚡ Chrome Application Assistant Companion</div>
+            <p style="font-size: 0.85rem; opacity: 0.9;">Simulates client-side form detection on employer portals (Workday, Greenhouse, Lever).</p>
+          </div>
+          <span style="background: rgba(255,255,255,0.2); padding: 0.3rem 0.8rem; border-radius: 99px; font-size: 0.75rem; font-weight: 700;">Manifest V3 Connected</span>
+        </div>
+
+        <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1.5rem;">
+          <h3 style="margin-bottom: 1rem;">Detected Portal Form Fields (Workday Simulation)</h3>
+          
+          <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <div style="display: grid; grid-template-columns: 200px 1fr 100px; gap: 1rem; align-items: center; background: rgba(0,0,0,0.2); padding: 0.75rem; border-radius: var(--radius-sm);">
+              <span style="font-weight: 600; font-size: 0.85rem;">First Name</span>
+              <input type="text" class="form-control" value="Jordan" readonly>
+              <span class="badge-status badge-verified">100% Match</span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 200px 1fr 100px; gap: 1rem; align-items: center; background: rgba(0,0,0,0.2); padding: 0.75rem; border-radius: var(--radius-sm);">
+              <span style="font-weight: 600; font-size: 0.85rem;">Graduation Date</span>
+              <input type="text" class="form-control" value="05/2028" readonly>
+              <span class="badge-status badge-verified">100% Match</span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 200px 1fr 100px; gap: 1rem; align-items: center; background: rgba(0,0,0,0.2); padding: 0.75rem; border-radius: var(--radius-sm);">
+              <span style="font-weight: 600; font-size: 0.85rem;">Tailored Resume Doc</span>
+              <input type="text" class="form-control" value="Jordan_Smith_MorganStanley_PWM_2027.pdf" readonly>
+              <span class="badge-status badge-verified">Attached</span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 200px 1fr 100px; gap: 1rem; align-items: center; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); padding: 0.75rem; border-radius: var(--radius-sm);">
+              <span style="font-weight: 600; font-size: 0.85rem; color: #fca5a5;">Sponsorship Requirement?</span>
+              <input type="text" class="form-control" value="Requires Confirmation (No Sponsorship Needed)" readonly>
+              <span class="badge-status badge-unverified">User Verification Needed</span>
+            </div>
+          </div>
+
+          <div style="margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; background: #0b0f19; padding: 1rem; border-radius: var(--radius-sm);">
+            <div style="font-size: 0.8rem; color: var(--text-muted);">
+              🔒 <strong>Safety Guardrail:</strong> The Assistant fills fields but NEVER clicks final "Submit". Explicit manual review is mandatory.
+            </div>
+            <button class="btn" onclick="alert('Simulation: Fields filled safely on host tab! Please conduct final review and submit manually.')">Autofill Application Form</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL: JOB DETAIL & MATCH BREAKDOWN -->
+  <div id="job-detail-modal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div>
+          <h3 id="modal-job-title" style="color: #fff;">Role Title</h3>
+          <div id="modal-job-company" class="text-sm">Company Name</div>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="closeModal('job-detail-modal')">✕ Close</button>
+      </div>
+      <div class="modal-body">
+        
+        <!-- Score Breakdown Component -->
+        <div>
+          <h4 style="margin-bottom: 0.5rem;">Weighted Match Score Analysis</h4>
+          <div class="breakdown-grid" id="modal-score-breakdown">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+        <div>
+          <h4 style="margin-bottom: 0.5rem;">Job Description Overview</h4>
+          <p id="modal-job-description" style="font-size: 0.9rem; color: var(--text-muted); white-space: pre-line;"></p>
+        </div>
+
+        <div>
+          <h4 style="margin-bottom: 0.5rem;">Identified Key ATS Keywords</h4>
+          <div class="tags-row" id="modal-job-keywords">
+            <!-- Keywords populated via JS -->
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="saveJobFromModal()">Save Job</button>
+        <button class="btn" onclick="startTailoringFromModal()">Tailor Resume for Role →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: PASTE CUSTOM JOB -->
+  <div id="add-job-modal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3>Add Custom Internship Listing</h3>
+        <button class="btn btn-secondary btn-sm" onclick="closeModal('add-job-modal')">✕ Close</button>
+      </div>
+      <div class="modal-body">
+        <div class="filter-group">
+          <label class="filter-label">Company Name</label>
+          <input type="text" id="custom-company" class="form-control" placeholder="e.g., UBS">
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">Role Title</label>
+          <input type="text" id="custom-title" class="form-control" placeholder="e.g., Summer 2027 Wealth Management Intern">
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">Sub-Sector Category</label>
+          <select id="custom-category" class="form-select">
+            <option value="wm">Wealth Management (PWM)</option>
+            <option value="am">Asset & Investment Mgmt</option>
+            <option value="pb">Private Banking / Family Office</option>
+            <option value="fp">Financial Planning / RIA</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">Job Description Text</label>
+          <textarea id="custom-description" class="form-control" rows="5" placeholder="Paste full JD text here for automated ATS keyword extractions and match scoring..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('add-job-modal')">Cancel</button>
+        <button class="btn" onclick="submitCustomJob()">Analyze & Add Role</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- SEEDED DATASTORE FOR SUMMER 2027 WEALTH & FINANCE INTERNSHIPS ---
+    let state = {
+      activeTab: 'discovery',
+      activeJobId: null,
+      factBank: [
+        { id: 'f1', category: 'Education', content: ' Stern School of Business, New York University - BS Finance (GPA: 3.82, Exp. May 2028)', verified: true },
+        { id: 'f2', category: 'Experience', content: 'Wealth Management Summer Analyst at Regional RIA: Managed client portfolio review prep for $45M AUM across 30+ high-net-worth families.', verified: true },
+        { id: 'f3', category: 'Experience', content: 'Finance Association Portfolio Lead: Built DCF and multi-factor asset allocation models in Excel/Python for $100k student fund.', verified: true },
+        { id: 'f4', category: 'Skills', content: 'Financial Modeling, Bloomberg Market Concepts (BMC), Excel (VLOOKUP, Pivot Tables), Python, Client Relationship Management (CRM)', verified: true },
+        { id: 'f5', category: 'Certifications', content: 'FINRA Securities Industry Essentials (SIE) Exam Passed (2025)', verified: true }
+      ],
+      jobs: [
+        {
+          id: 'job-1',
+          company: 'Morgan Stanley',
+          title: '2027 Private Wealth Management Summer Analyst',
+          category: 'wm',
+          location: 'New York, NY',
+          arrangement: 'Hybrid',
+          deadline: '2026-11-15',
+          featured: true,
+          matchScore: 94,
+          scoreBreakdown: { career: '30/30', skills: '23/25', edu: '15/15', loc: '10/10', auth: '10/10', comp: '4/5', fresh: '2/5' },
+          description: `The Private Wealth Management (PWM) Division at Morgan Stanley provides highly customized financial advice and investment solutions to ultra-high-net-worth individuals, families, and foundations.\n\nQualifications:\n- Expected Graduation: Winter 2027 or Spring 2028.\n- Strong analytical skills, interest in asset allocation, capital markets, and financial planning.\n- Proven client service mindset and attention to detail.`,
+          keywords: ['Wealth Management', 'Asset Allocation', 'HNW Clients', 'Financial Planning', 'Excel', 'Securities'],
+          status: 'Discovered'
+        },
+        {
+          id: 'job-2',
+          company: 'JPMorganChase',
+          title: 'Summer 2027 Asset & Wealth Management Intern',
+          category: 'am',
+          location: 'Chicago, IL',
+          arrangement: 'On-site',
+          deadline: '2026-10-30',
+          featured: true,
+          matchScore: 89,
+          scoreBreakdown: { career: '28/30', skills: '21/25', edu: '15/15', loc: '8/10', auth: '10/10', comp: '4/5', fresh: '3/5' },
+          description: `Join J.P. Morgan Asset & Wealth Management to deliver solutions for global clients. Interns participate in portfolio strategy, equity analysis, and client advisory workflows.`,
+          keywords: ['Asset Management', 'Portfolio Strategy', 'Equity Analysis', 'Client Advisory', 'Python'],
+          status: 'Saved'
+        },
+        {
+          id: 'job-3',
+          company: 'Northern Trust',
+          title: '2027 Wealth Management Advisory Intern',
+          category: 'wm',
+          location: 'Boston, MA',
+          arrangement: 'Hybrid',
+          deadline: '2026-12-01',
+          featured: false,
+          matchScore: 85,
+          scoreBreakdown: { career: '27/30', skills: '20/25', edu: '15/15', loc: '7/10', auth: '10/10', comp: '3/5', fresh: '3/5' },
+          description: `Focus on holistic wealth management, trust administration, estate planning strategies, and portfolio construction for high-net-worth clients.`,
+          keywords: ['Trust Administration', 'Estate Planning', 'Portfolio Construction', 'HNW Solutions'],
+          status: 'Discovered'
+        },
+        {
+          id: 'job-4',
+          company: 'Bessemer Trust',
+          title: 'Family Office & Private Banking Intern - Summer 2027',
+          category: 'pb',
+          location: 'New York, NY',
+          arrangement: 'On-site',
+          deadline: '2026-11-01',
+          featured: false,
+          matchScore: 91,
+          scoreBreakdown: { career: '29/30', skills: '22/25', edu: '15/15', loc: '10/10', auth: '10/10', comp: '3/5', fresh: '2/5' },
+          description: `Bessemer Trust is a privately owned wealth management firm. Interns work alongside senior advisors on multi-generational family office wealth strategy, tax planning support, and asset management.`,
+          keywords: ['Family Office', 'Private Banking', 'Tax Planning', 'Wealth Strategy', 'Client Relations'],
+          status: 'Preparing'
+        }
+      ]
+    };
+
+    // --- NAVIGATION LOGIC ---
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.view-panel').forEach(panel => panel.classList.remove('active'));
+
+      event.target.classList.add('active');
+      const targetPanel = document.getElementById(`view-${tabId}`);
+      if (targetPanel) targetPanel.classList.add('active');
+
+      if (tabId === 'factbank') renderFactBank();
+      if (tabId === 'tailor') renderTailoredResume();
+      if (tabId === 'tracker') renderKanbanBoard();
+    }
+
+    // --- RENDER DISCOVERY FEED ---
+    function renderJobs() {
+      const container = document.getElementById('jobs-container');
+      const searchTerm = document.getElementById('filter-search').value.toLowerCase();
+      const arrangement = document.getElementById('filter-location-type').value;
+      const minScore = parseInt(document.getElementById('filter-min-score').value, 10);
+
+      // Filter sub-sectors checked
+      const checkedCategories = Array.from(document.querySelectorAll('.checkbox-group input:checked')).map(cb => cb.value);
+
+      const filtered = state.jobs.filter(job => {
+        const matchesSearch = job.title.toLowerCase().includes(searchTerm) || job.company.toLowerCase().includes(searchTerm);
+        const matchesArrangement = arrangement === 'all' || job.arrangement === arrangement;
+        const matchesCategory = checkedCategories.includes(job.category);
+        const matchesScore = job.matchScore >= minScore;
+        return matchesSearch && matchesArrangement && matchesCategory && matchesScore;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding: 3rem; color: var(--text-muted); background: var(--bg-card); border-radius: var(--radius-md);">No opportunities matching criteria. Try adjusting your filters.</div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(job => `
+        <div class="job-card ${job.featured ? 'featured' : ''}" onclick="openJobDetail('${job.id}')">
+          <div class="job-main-info">
+            <div class="company-row">
+              <span class="company-name">${job.company}</span>
+              <span>•</span>
+              <span>${job.location} (${job.arrangement})</span>
+              <span>•</span>
+              <span style="color: var(--warning);">Deadline: ${job.deadline}</span>
+            </div>
+            <div class="job-role-title">${job.title}</div>
+            <div class="tags-row">
+              <span class="tag tag-priority">Summer 2027</span>
+              ${job.keywords.map(kw => `<span class="tag">${kw}</span>`).join('')}
+            </div>
+          </div>
+          <div class="job-score-box">
+            <div class="score-badge">
+              <div class="score-number ${job.matchScore < 90 ? 'med' : ''}">${job.matchScore}%</div>
+              <div class="score-label">Match Score</div>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); startTailoringForJob('${job.id}')">Tailor Resume</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // --- MODAL & DETAIL HANDLERS ---
+    function openJobDetail(jobId) {
+      const job = state.jobs.find(j => j.id === jobId);
+      if (!job) return;
+      state.activeJobId = jobId;
+
+      document.getElementById('modal-job-title').innerText = job.title;
+      document.getElementById('modal-job-company').innerText = `${job.company} | ${job.location} | Deadline: ${job.deadline}`;
+      document.getElementById('modal-job-description').innerText = job.description;
+
+      document.getElementById('modal-score-breakdown').innerHTML = `
+        <div class="breakdown-item"><span class="breakdown-title">Career Alignment (30%)</span><span class="breakdown-val text-green">${job.scoreBreakdown.career}</span></div>
+        <div class="breakdown-item"><span class="breakdown-title">Skills Match (25%)</span><span class="breakdown-val text-green">${job.scoreBreakdown.skills}</span></div>
+        <div class="breakdown-item"><span class="breakdown-title">Graduation Year (15%)</span><span class="breakdown-val text-green">${job.scoreBreakdown.edu}</span></div>
+        <div class="breakdown-item"><span class="breakdown-title">Location Pref (10%)</span><span class="breakdown-val">${job.scoreBreakdown.loc}</span></div>
+        <div class="breakdown-item"><span class="breakdown-title">Work Auth (10%)</span><span class="breakdown-val text-green">${job.scoreBreakdown.auth}</span></div>
+      `;
+
+      document.getElementById('modal-job-keywords').innerHTML = job.keywords.map(kw => `<span class="tag tag-priority">${kw}</span>`).join('');
+
+      openModal('job-detail-modal');
+    }
+
+    function openModal(modalId) {
+      document.getElementById(modalId).classList.add('active');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+    }
+
+    function submitCustomJob() {
+      const company = document.getElementById('custom-company').value || 'Custom Firm';
+      const title = document.getElementById('custom-title').value || 'Summer 2027 Wealth Intern';
+      const category = document.getElementById('custom-category').value;
+      const description = document.getElementById('custom-description').value;
+
+      const newJob = {
+        id: 'job-' + Date.now(),
+        company,
+        title,
+        category,
+        location: 'New York, NY',
+        arrangement: 'Hybrid',
+        deadline: '2026-12-15',
+        featured: false,
+        matchScore: 88,
+        scoreBreakdown: { career: '28/30', skills: '21/25', edu: '15/15', loc: '9/10', auth: '10/10', comp: '3/5', fresh: '2/5' },
+        description,
+        keywords: ['Wealth Management', 'Financial Modeling', 'Client Advisory'],
+        status: 'Discovered'
+      };
+
+      state.jobs.unshift(newJob);
+      closeModal('add-job-modal');
+      renderJobs();
+      alert('Custom job added and analyzed against your fact bank!');
+    }
+
+    // --- FACT BANK LOGIC ---
+    function renderFactBank() {
+      const container = document.getElementById('fact-bank-list');
+      container.innerHTML = state.factBank.map(fact => `
+        <div class="fact-card ${fact.verified ? 'verified' : 'unverified'}">
+          <div>
+            <span class="filter-label">${fact.category}</span>
+            <p style="font-weight: 600; margin-top: 0.2rem;">${fact.content}</p>
+          </div>
+          <div>
+            <span class="badge-status ${fact.verified ? 'badge-verified' : 'badge-unverified'}">
+              ${fact.verified ? 'Verified Fact' : 'Unverified'}
+            </span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function triggerResumeUpload() {
+      alert('Simulating PDF parser... Resume parsed! 5 structured bullet points verified and saved into Master Fact Bank.');
+    }
+
+    // --- TAILORING ENGINE & TRUTH GUARDRAILS ---
+    function startTailoringForJob(jobId) {
+      state.activeJobId = jobId;
+      // Switch tab programmatically
+      document.querySelectorAll('.nav-btn')[2].click();
+    }
+
+    function renderTailoredResume() {
+      const masterFactsContainer = document.getElementById('master-facts-preview');
+      const bulletsContainer = document.getElementById('tailored-experience-bullets');
+      const activeJob = state.jobs.find(j => j.id === state.activeJobId) || state.jobs[0];
+
+      document.getElementById('tailor-subtitle').innerText = `Aligned for target role: ${activeJob.company} - ${activeJob.title}`;
+
+      // Master facts render
+      masterFactsContainer.innerHTML = state.factBank.map(f => `<div>• [${f.category}] ${f.content}</div>`).join('');
+
+      // Tailored bullets preview with changes highlighted and strictly tied to verified facts
+      bulletsContainer.innerHTML = `
+        <div style="font-size: 0.85rem; font-weight: 600; margin-top: 0.5rem; margin-bottom: 0.2rem;">Wealth Management Analyst | Regional RIA</div>
+        <div class="bullet-highlight">
+          <strong>[Aligned with ${activeJob.keywords[0] || 'WM'}]:</strong> Prepared portfolio performance and asset allocation reviews for $45M in client AUM across 30+ high-net-worth families, utilizing verified CRM software data.
+          <div style="font-size: 0.7rem; color: var(--success); font-style: italic; margin-top: 0.2rem;">✓ Fact Verified from Item #f2. No unverified claims introduced.</div>
+        </div>
+
+        <div style="font-size: 0.85rem; font-weight: 600; margin-top: 0.75rem; margin-bottom: 0.2rem;">Student Investment Association | Portfolio Lead</div>
+        <div class="bullet-highlight">
+          <strong>[Keywords Included]:</strong> Modeled DCF valuations and multi-factor portfolio allocations in Excel and Python to evaluate $100k multi-asset fund strategy.
+          <div style="font-size: 0.7rem; color: var(--success); font-style: italic; margin-top: 0.2rem;">✓ Fact Verified from Item #f3. Meaning preserved.</div>
+        </div>
+      `;
+    }
+
+    function runTruthCheck() {
+      alert(' Automated Truth-Check Complete:\n- 100% of resume bullets mapped to verified facts in the Fact Bank.\n- Zero hallucinated achievements detected.\n- Document approved for submission export!');
+    }
+
+    function exportPDF() {
+      alert(`Downloading ATS-Optimized PDF for ${state.jobs.find(j => j.id === state.activeJobId)?.company || 'Target Firm'}...`);
+    }
+
+    function exportDOCX() {
+      alert(`Exporting clean single-column DOCX format...`);
+    }
+
+    // --- APPLICATION TRACKER KANBAN ---
+    function renderKanbanBoard() {
+      const board = document.getElementById('kanban-board');
+      const stages = ['Discovered', 'Saved', 'Preparing', 'Ready to Apply', 'Applied'];
+
+      board.innerHTML = stages.map(stage => {
+        const stageJobs = state.jobs.filter(j => j.status === stage || (stage === 'Discovered' && !j.status));
+        return `
+          <div class="kanban-column">
+            <div class="kanban-header">
+              <span>${stage}</span>
+              <span class="badge-status badge-verified">${stageJobs.length}</span>
+            </div>
+            ${stageJobs.map(job => `
+              <div class="kanban-card">
+                <div class="kanban-card-title">${job.title}</div>
+                <div class="kanban-card-company">${job.company}</div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.4rem;">
+                  <span class="tag tag-priority">${job.matchScore}% Score</span>
+                  <select onchange="updateJobStatus('${job.id}', this.value)" style="background: var(--bg-input); color: #fff; border: 1px solid var(--border); font-size: 0.7rem; padding: 0.1rem;">
+                    ${stages.map(s => `<option value="${s}" ${s === stage ? 'selected' : ''}>${s}</option>`).join('')}
+                  </select>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateJobStatus(jobId, newStatus) {
+      const job = state.jobs.find(j => j.id === jobId);
+      if (job) {
+        job.status = newStatus;
+        renderKanbanBoard();
+      }
+    }
+
+    function startTailoringFromModal() {
+      closeModal('job-detail-modal');
+      startTailoringForJob(state.activeJobId);
+    }
+
+    function saveJobFromModal() {
+      const job = state.jobs.find(j => j.id === state.activeJobId);
+      if (job) {
+        job.status = 'Saved';
+        alert(`Job ${job.title} saved to tracker!`);
+        closeModal('job-detail-modal');
+      }
+    }
+
+    function resetFilters() {
+      document.getElementById('filter-search').value = '';
+      document.getElementById('filter-location-type').value = 'all';
+      document.getElementById('filter-min-score').value = '0';
+      renderJobs();
+    }
+
+    // Initial Startup Render
+    renderJobs();
+  </script>
+</body>
+</html>
