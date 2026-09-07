@@ -3,1527 +3,995 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Internship Copilot — Editorial Portfolio & Application Management</title>
-  
-  <!-- Fonts: Refined Serif (Cormorant Garamond) + Clean Sans (Inter) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  
-  <!-- PDF parsing library for client-side processing -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-
+  <meta name="description" content="Prospect is a fictional-data finance internship planning prototype.">
+  <title>Prospect — Finance Internship Planner</title>
   <style>
     :root {
-      --bg-stone: #f6f5f0;
-      --bg-surface: #ffffff;
-      --bg-subtle: #efece6;
-      --border-thin: #e2ded6;
-      --border-dark: #222222;
-      
-      --text-main: #222222;
-      --text-muted: #666666;
-      --text-light: #8e8b82;
-      
-      --accent-olive: #4a5d4e;
-      --accent-olive-bg: #eaece8;
-      --accent-terracotta: #8c533e;
-      --accent-terracotta-bg: #f8f1ee;
-      
-      --font-serif: 'Cormorant Garamond', Georgia, serif;
-      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      
-      --sidebar-width: 240px;
+      --paper: #f3ecdf;
+      --paper-deep: #eae0d0;
+      --raised: #fbf7ef;
+      --white: #fffdf8;
+      --ink: #252521;
+      --ink-soft: #625f57;
+      --sage: #61705e;
+      --sage-soft: #dfe6dc;
+      --umber: #865b3e;
+      --umber-soft: #eadbcf;
+      --line: #cec4b4;
+      --danger: #8a4036;
+      --warning: #85631e;
+      --success: #456847;
+      --focus: #1d628e;
+      --shadow: 0 18px 50px rgba(42, 38, 30, 0.08);
+      --font-display: Georgia, "Times New Roman", serif;
+      --font-body: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --radius: 12px;
+      --sidebar: 238px;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
-      background-color: var(--bg-stone);
-      color: var(--text-main);
-      font-family: var(--font-sans);
-      font-size: 14px;
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-      display: flex;
+      margin: 0;
       min-height: 100vh;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: var(--font-body);
+      line-height: 1.55;
     }
-
-    .app-layout {
-      display: flex;
-      width: 100%;
-      min-height: 100vh;
+    button, input, select, textarea { font: inherit; }
+    button, select, input[type="checkbox"] { cursor: pointer; }
+    button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 3px;
     }
-
-    aside.left-nav {
-      width: var(--sidebar-width);
-      background-color: var(--bg-stone);
-      border-right: 1px solid var(--border-thin);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 2.5rem 1.5rem;
+    button:disabled { cursor: not-allowed; opacity: .5; }
+    a { color: inherit; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1, h2, h3, .brand, .display-number { font-family: var(--font-display); font-weight: 500; }
+    h1 { font-size: clamp(2.2rem, 5vw, 4.3rem); line-height: .98; letter-spacing: -.035em; margin-bottom: 1rem; }
+    h2 { font-size: clamp(1.55rem, 3vw, 2.25rem); line-height: 1.1; }
+    h3 { font-size: 1.2rem; line-height: 1.2; }
+    .skip-link {
       position: fixed;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      z-index: 50;
+      top: .75rem;
+      left: .75rem;
+      z-index: 1000;
+      padding: .7rem 1rem;
+      background: var(--ink);
+      color: white;
+      transform: translateY(-160%);
     }
+    .skip-link:focus { transform: translateY(0); }
 
-    .brand-header {
-      margin-bottom: 2.5rem;
-    }
-
-    .brand-title {
-      font-family: var(--font-serif);
-      font-size: 1.4rem;
-      font-weight: 600;
-      letter-spacing: -0.01em;
-      color: var(--text-main);
-      text-decoration: none;
-      display: block;
-      margin-bottom: 0.25rem;
-    }
-
-    .brand-subtitle {
-      font-size: 0.725rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-muted);
-    }
-
-    .nav-menu {
+    .app-shell { min-height: 100vh; }
+    .sidebar {
+      position: fixed;
+      inset: 0 auto 0 0;
+      z-index: 20;
+      width: var(--sidebar);
       display: flex;
       flex-direction: column;
-      gap: 0.25rem;
-      list-style: none;
+      padding: 2rem 1.25rem 1.25rem;
+      background: var(--raised);
+      border-right: 1px solid var(--line);
     }
-
-    .nav-item button {
-      width: 100%;
-      text-align: left;
-      background: none;
-      border: none;
-      padding: 0.6rem 0.75rem;
-      font-family: var(--font-sans);
-      font-size: 0.875rem;
-      color: var(--text-muted);
-      border-radius: 0px;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .nav-item button:hover {
-      color: var(--text-main);
-      background-color: var(--bg-subtle);
-    }
-
-    .nav-item button.active {
-      color: var(--text-main);
-      font-weight: 600;
-      border-left: 2px solid var(--accent-olive);
-      background-color: rgba(74, 93, 78, 0.05);
-      padding-left: calc(0.75rem - 2px);
-    }
-
-    .nav-badge {
-      font-size: 0.7rem;
-      padding: 0.1rem 0.4rem;
-      background: var(--bg-subtle);
-      border-radius: 2px;
-      color: var(--text-muted);
-    }
-
-    .user-footer {
-      border-top: 1px solid var(--border-thin);
-      padding-top: 1.25rem;
-    }
-
-    .user-name {
-      font-weight: 600;
-      font-size: 0.85rem;
-      color: var(--text-main);
-    }
-
-    .user-meta {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-    }
-
-    main.main-content {
-      margin-left: var(--sidebar-width);
-      flex: 1;
-      padding: 3rem 4rem;
-      max-width: 1200px;
-    }
-
-    .page-view {
-      display: none;
-    }
-
-    .page-view.active {
-      display: block;
-      animation: fadeIn 0.2s ease-in;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    /* Typography Utilities */
-    h1.editorial-title {
-      font-family: var(--font-serif);
-      font-size: 2.25rem;
-      font-weight: 500;
-      color: var(--text-main);
-      margin-bottom: 0.5rem;
-      line-height: 1.2;
-    }
-
-    p.editorial-subtitle {
-      font-size: 0.95rem;
-      color: var(--text-muted);
-      margin-bottom: 2.5rem;
-      max-width: 680px;
-    }
-
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      border-bottom: 1px solid var(--border-thin);
-      padding-bottom: 0.75rem;
-      margin-bottom: 1.5rem;
-      margin-top: 2.5rem;
-    }
-
-    .section-title {
-      font-family: var(--font-serif);
-      font-size: 1.35rem;
-      font-weight: 500;
-    }
-
-    .btn {
+    .brand-row { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-bottom: .35rem; }
+    .brand { font-size: 1.8rem; text-decoration: none; letter-spacing: -.03em; }
+    .demo-badge, .eyebrow, .pill, .status-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      background-color: var(--border-dark);
-      color: #ffffff;
-      border: 1px solid var(--border-dark);
-      padding: 0.55rem 1.1rem;
-      font-family: var(--font-sans);
-      font-size: 0.825rem;
-      font-weight: 500;
-      letter-spacing: 0.02em;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      text-decoration: none;
-    }
-
-    .btn:hover {
-      background-color: #333333;
-      border-color: #333333;
-    }
-
-    .btn-outline {
-      background-color: transparent;
-      color: var(--text-main);
-      border: 1px solid var(--border-thin);
-    }
-
-    .btn-outline:hover {
-      border-color: var(--border-dark);
-      background-color: var(--bg-surface);
-    }
-
-    .btn-sm {
-      padding: 0.35rem 0.75rem;
-      font-size: 0.775rem;
-    }
-
-    .btn-olive {
-      background-color: var(--accent-olive);
-      border-color: var(--accent-olive);
-    }
-
-    .btn-olive:hover {
-      background-color: #3b4b3e;
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.35rem;
-      margin-bottom: 1.25rem;
-    }
-
-    .form-label {
-      font-size: 0.75rem;
+      gap: .35rem;
+      width: fit-content;
+      font-size: .7rem;
+      font-weight: 750;
+      letter-spacing: .08em;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-muted);
-      font-weight: 600;
     }
-
-    .form-input, .form-select, .form-textarea {
-      width: 100%;
-      background-color: var(--bg-surface);
-      border: 1px solid var(--border-thin);
-      padding: 0.65rem 0.85rem;
-      font-family: var(--font-sans);
-      font-size: 0.875rem;
-      color: var(--text-main);
-      outline: none;
-      transition: border-color 0.15s ease;
-    }
-
-    .form-input:focus, .form-select:focus, .form-textarea:focus {
-      border-color: var(--border-dark);
-    }
-
-    .editorial-card {
-      background-color: var(--bg-surface);
-      border: 1px solid var(--border-thin);
-      padding: 1.75rem;
-      margin-bottom: 2rem;
-    }
-
-    .upload-dropzone {
-      border: 1px dashed var(--border-thin);
-      background-color: var(--bg-stone);
-      padding: 2.5rem;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      margin-bottom: 1rem;
-    }
-
-    .upload-dropzone:hover {
-      border-color: var(--accent-olive);
-      background-color: var(--bg-surface);
-    }
-
-    .editorial-table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-      font-size: 0.875rem;
-    }
-
-    .editorial-table th {
-      border-bottom: 1px solid var(--border-dark);
-      padding: 0.75rem 0.5rem;
-      font-size: 0.725rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--text-muted);
-      font-weight: 600;
-    }
-
-    .editorial-table td {
-      border-bottom: 1px solid var(--border-thin);
-      padding: 1rem 0.5rem;
-      vertical-align: middle;
-      color: var(--text-main);
-    }
-
-    .editorial-table tr:hover td {
-      background-color: rgba(255, 255, 255, 0.6);
-    }
-
-    .status-tag {
-      display: inline-block;
-      padding: 0.15rem 0.5rem;
-      font-size: 0.725rem;
-      letter-spacing: 0.02em;
-      background-color: var(--bg-subtle);
-      color: var(--text-muted);
-      border-radius: 1px;
-    }
-
-    .status-tag.eligible {
-      background-color: var(--accent-olive-bg);
-      color: var(--accent-olive);
-    }
-
-    .status-tag.action-required {
-      background-color: var(--accent-terracotta-bg);
-      color: var(--accent-terracotta);
-    }
-
-    .fit-score-indicator {
-      font-family: var(--font-serif);
-      font-size: 1.1rem;
-      font-weight: 600;
-    }
-
-    .drawer-overlay {
-      position: fixed;
-      inset: 0;
-      background-color: rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(2px);
-      z-index: 100;
-      display: none;
-      justify-content: flex-end;
-    }
-
-    .drawer-overlay.active {
+    .demo-badge { padding: .28rem .5rem; color: var(--umber); background: var(--umber-soft); border-radius: 999px; }
+    .brand-subtitle { color: var(--ink-soft); font-size: .78rem; margin-bottom: 2.2rem; }
+    .nav-list { display: grid; gap: .35rem; }
+    .nav-button {
+      min-height: 44px;
       display: flex;
-    }
-
-    .drawer-content {
-      width: 100%;
-      max-width: 680px;
-      background-color: var(--bg-stone);
-      height: 100vh;
-      overflow-y: auto;
-      padding: 2.5rem;
-      border-left: 1px solid var(--border-thin);
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
-      box-shadow: -10px 0 30px rgba(0,0,0,0.05);
-    }
-
-    .drawer-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      border-bottom: 1px solid var(--border-thin);
-      padding-bottom: 1.5rem;
-    }
-
-    .qualification-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
-    }
-
-    .qualification-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 0.5rem;
-      font-size: 0.85rem;
-    }
-
-    .qual-icon {
-      font-weight: 700;
-      font-size: 0.85rem;
-    }
-    .qual-matched { color: var(--accent-olive); }
-    .qual-missing { color: var(--accent-terracotta); }
-
-    .disclaimer-box {
-      background-color: var(--bg-subtle);
-      border-left: 2px solid var(--text-light);
-      padding: 0.85rem 1rem;
-      font-size: 0.775rem;
-      color: var(--text-muted);
-      line-height: 1.5;
-    }
-
-    /* System Status Banner */
-    .system-status-pill {
-      display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
-      font-size: 0.725rem;
-      color: var(--accent-olive);
-      background-color: var(--accent-olive-bg);
-      padding: 0.25rem 0.6rem;
-      border-radius: 2px;
-      margin-bottom: 1.5rem;
+      gap: .75rem;
+      width: 100%;
+      padding: .7rem .8rem;
+      border: 0;
+      border-radius: 8px;
+      color: var(--ink-soft);
+      background: transparent;
+      text-align: left;
     }
+    .nav-button:hover { background: var(--paper); color: var(--ink); }
+    .nav-button[aria-current="page"] { background: var(--sage-soft); color: var(--ink); font-weight: 700; }
+    .nav-icon { width: 1.4rem; text-align: center; font-size: 1rem; }
+    .sidebar-footer { margin-top: auto; padding-top: 1rem; color: var(--ink-soft); font-size: .76rem; }
+    .reset-link { border: 0; padding: .25rem 0; color: var(--danger); background: transparent; text-decoration: underline; }
 
-    .status-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background-color: var(--accent-olive);
+    .mobile-header { display: none; }
+    main { margin-left: var(--sidebar); min-height: 100vh; }
+    .content { width: min(100% - 3rem, 1320px); margin: 0 auto; padding: 2.2rem 0 4rem; }
+    .prototype-notice {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: .8rem;
+      align-items: start;
+      margin-bottom: 2.7rem;
+      padding: .85rem 1rem;
+      color: #5c482b;
+      background: #f5e8c9;
+      border: 1px solid #dfcb98;
+      border-radius: 8px;
+      font-size: .82rem;
     }
+    .prototype-notice p { margin: 0; }
+    .notice-icon { font-size: 1rem; }
+    .view[hidden] { display: none !important; }
+    .view-header { display: flex; justify-content: space-between; gap: 2rem; align-items: end; margin-bottom: 2rem; }
+    .view-intro { max-width: 680px; color: var(--ink-soft); font-size: 1rem; }
+    .eyebrow { color: var(--umber); margin-bottom: .8rem; }
+    .section-head { display: flex; justify-content: space-between; gap: 1rem; align-items: end; margin: 2.8rem 0 1.2rem; }
+    .section-head h2, .section-head p { margin-bottom: 0; }
+    .muted { color: var(--ink-soft); }
+    .tiny { color: var(--ink-soft); font-size: .78rem; }
 
-    /* Modal dialog */
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.4);
-      display: none;
+    .button {
+      min-height: 44px;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      z-index: 200;
+      gap: .45rem;
+      padding: .7rem 1rem;
+      border: 1px solid var(--ink);
+      border-radius: 7px;
+      background: transparent;
+      color: var(--ink);
+      font-weight: 700;
+      text-decoration: none;
+      transition: transform 150ms ease, background 150ms ease;
     }
+    .button:hover { transform: translateY(-1px); background: rgba(255,255,255,.4); }
+    .button.primary { background: var(--ink); color: var(--white); }
+    .button.primary:hover { background: #3a3934; }
+    .button.sage { border-color: var(--sage); background: var(--sage); color: white; }
+    .button.ghost { border-color: transparent; padding-inline: .55rem; }
+    .button.danger { border-color: var(--danger); color: var(--danger); }
+    .button.small { min-height: 38px; padding: .5rem .72rem; font-size: .82rem; }
+    .button-row { display: flex; flex-wrap: wrap; gap: .65rem; align-items: center; }
 
-    .modal-backdrop.active {
-      display: flex;
+    .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+    .metric-card, .panel, .job-card, .fact-card, .tracker-card {
+      background: var(--raised);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
     }
+    .metric-card { padding: 1.25rem; }
+    .metric-label { color: var(--ink-soft); font-size: .8rem; margin-bottom: .6rem; }
+    .display-number { display: block; font-size: 2.35rem; line-height: 1; margin-bottom: .45rem; }
+    .metric-note { color: var(--ink-soft); font-size: .74rem; }
+    .panel { padding: 1.4rem; }
+    .panel-grid { display: grid; grid-template-columns: 1.3fr .7fr; gap: 1rem; }
+    .score-explainer { display: grid; gap: .8rem; }
+    .score-explainer article { padding: 1rem; background: rgba(255,255,255,.35); border-left: 3px solid var(--sage); }
+    .score-explainer h3 { margin-bottom: .35rem; font-size: 1rem; }
+    .score-explainer p { margin-bottom: 0; color: var(--ink-soft); font-size: .82rem; }
 
-    .modal-box {
-      background-color: var(--bg-stone);
-      border: 1px solid var(--border-thin);
+    .job-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+    .job-card { display: flex; flex-direction: column; min-width: 0; padding: 1.25rem; transition: transform 160ms ease, box-shadow 160ms ease; }
+    .job-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+    .job-card h3 { margin: .4rem 0 .3rem; overflow-wrap: anywhere; }
+    .company { margin-bottom: .9rem; color: var(--ink-soft); font-size: .88rem; }
+    .job-meta { display: grid; gap: .38rem; margin-bottom: 1rem; color: var(--ink-soft); font-size: .78rem; }
+    .job-meta span { display: flex; gap: .45rem; }
+    .job-score-row { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; margin: .9rem 0 1rem; }
+    .mini-score { padding: .65rem; background: var(--paper); border-radius: 7px; }
+    .mini-score strong { display: block; font-family: var(--font-display); font-size: 1.3rem; }
+    .mini-score span { color: var(--ink-soft); font-size: .68rem; }
+    .job-actions { display: flex; gap: .5rem; margin-top: auto; }
+    .job-actions .button:last-child { flex: 1; }
+    .pill { padding: .3rem .55rem; border: 1px solid var(--line); border-radius: 999px; color: var(--sage); }
+    .wealth-pill { color: var(--umber); border-color: #c6a486; background: var(--umber-soft); }
+    .status-badge { padding: .35rem .55rem; border-radius: 999px; letter-spacing: .02em; text-transform: none; font-size: .72rem; }
+    .status-good { color: #315735; background: var(--sage-soft); }
+    .status-warn { color: #654a10; background: #f4e4b9; }
+    .status-bad { color: #71332c; background: #efd7d3; }
+    .status-neutral { color: #55524c; background: #e8e3d8; }
+
+    .filter-panel { display: grid; grid-template-columns: 2fr repeat(4, 1fr); gap: .75rem; padding: 1rem; margin-bottom: 1rem; background: var(--raised); border: 1px solid var(--line); border-radius: var(--radius); }
+    .field { display: grid; gap: .38rem; min-width: 0; }
+    .field label, .field-label { font-size: .74rem; font-weight: 750; color: var(--ink-soft); }
+    .field input, .field select, .field textarea, .input {
       width: 100%;
-      max-width: 550px;
-      padding: 2rem;
+      min-height: 44px;
+      padding: .65rem .7rem;
+      color: var(--ink);
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 6px;
     }
+    .field textarea { min-height: 112px; resize: vertical; }
+    .results-toolbar { display: flex; justify-content: space-between; gap: 1rem; align-items: center; margin: 1rem 0; }
+    .results-toolbar p { margin: 0; }
+    .checkbox-row { display: flex; align-items: center; gap: .55rem; min-height: 44px; }
+    .checkbox-row input { width: 1.1rem; height: 1.1rem; }
 
-    .toast-container {
-      position: fixed;
-      bottom: 2rem;
-      right: 2rem;
-      z-index: 300;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
+    .two-column { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .three-column { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .fact-list { display: grid; gap: .65rem; }
+    .fact-card { display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: start; padding: 1rem; }
+    .fact-card p { margin-bottom: .35rem; overflow-wrap: anywhere; }
+    .fact-meta { color: var(--ink-soft); font-size: .72rem; }
+    .fact-actions { display: flex; align-items: center; gap: .4rem; }
+    .fact-actions select { min-height: 38px; padding: .4rem; border: 1px solid var(--line); background: white; border-radius: 5px; }
+    .privacy-card { padding: 1rem; color: #604827; background: #f7ead0; border: 1px solid #dfc999; border-radius: 8px; }
+    .privacy-card strong { display: block; margin-bottom: .25rem; }
+    .drop-zone { padding: 1.3rem; text-align: center; border: 1px dashed var(--sage); border-radius: 8px; background: var(--sage-soft); }
+    .drop-zone input { max-width: 100%; }
+
+    .tailor-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .suggestion-card { padding: 1rem; margin-bottom: .75rem; background: var(--raised); border: 1px solid var(--line); border-radius: 9px; }
+    .suggestion-columns { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+    .text-box { min-height: 105px; padding: .85rem; background: var(--white); border: 1px solid var(--line); border-radius: 6px; font-size: .85rem; }
+    .text-box.proposed { border-left: 3px solid var(--sage); }
+    .fact-chips { display: flex; flex-wrap: wrap; gap: .4rem; margin: .75rem 0; }
+    .fact-chip { padding: .25rem .48rem; background: var(--sage-soft); border-radius: 999px; font-size: .7rem; }
+    .decision { font-weight: 750; font-size: .78rem; }
+    .decision.accepted { color: var(--success); }
+    .decision.rejected { color: var(--danger); }
+    .resume-sheet { max-width: 760px; min-height: 780px; padding: 2.2rem; margin-inline: auto; background: white; color: #161616; box-shadow: var(--shadow); border: 1px solid #dedede; }
+    .resume-sheet h2 { margin-bottom: .2rem; text-align: center; font-family: Arial, sans-serif; font-size: 1.5rem; font-weight: 700; }
+    .resume-sheet .contact { text-align: center; font-size: .75rem; }
+    .resume-sheet h3 { margin: 1.25rem 0 .45rem; padding-bottom: .2rem; font-family: Arial, sans-serif; font-size: .8rem; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #222; }
+    .resume-sheet p, .resume-sheet li { font-family: Arial, sans-serif; font-size: .78rem; line-height: 1.35; }
+    .resume-sheet ul { margin: .25rem 0 .6rem; padding-left: 1.1rem; }
+    .fictional-watermark { color: #7b3c34; text-align: center; font-size: .7rem; font-weight: 700; }
+
+    .tracker-board { display: grid; grid-template-columns: repeat(4, minmax(190px, 1fr)); gap: .8rem; overflow-x: auto; padding-bottom: .6rem; }
+    .tracker-column { min-width: 0; padding: .75rem; background: rgba(255,255,255,.24); border: 1px solid var(--line); border-radius: 10px; }
+    .tracker-column h3 { font-family: var(--font-body); font-size: .82rem; font-weight: 800; }
+    .tracker-card { padding: .8rem; margin-bottom: .65rem; }
+    .tracker-card h4 { margin: 0 0 .25rem; font-size: .86rem; }
+    .tracker-card p { margin-bottom: .5rem; font-size: .74rem; color: var(--ink-soft); }
+    .tracker-card select, .tracker-card input, .tracker-card textarea { width: 100%; margin-top: .35rem; padding: .45rem; background: white; border: 1px solid var(--line); border-radius: 5px; font-size: .74rem; }
+    .tracker-card textarea { resize: vertical; min-height: 58px; }
+
+    fieldset { margin: 0 0 1rem; padding: 1rem; border: 1px solid var(--line); border-radius: 8px; }
+    legend { padding: 0 .4rem; font-family: var(--font-display); font-size: 1.05rem; }
+    .choice-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: .45rem 1rem; }
+    .choice { display: flex; gap: .5rem; align-items: center; min-height: 38px; font-size: .85rem; }
+    .choice input { width: 1rem; height: 1rem; }
+
+    .empty-state { padding: 2.5rem 1rem; text-align: center; color: var(--ink-soft); background: rgba(255,255,255,.24); border: 1px dashed var(--line); border-radius: 10px; }
+    .empty-state h3 { color: var(--ink); }
+    .action-list { display: grid; gap: .6rem; padding: 0; list-style: none; }
+    .action-list li { display: flex; gap: .75rem; align-items: center; padding: .75rem; border-bottom: 1px solid var(--line); }
+    .action-date { min-width: 4.7rem; font-size: .72rem; color: var(--umber); font-weight: 750; }
+
+    dialog { width: min(760px, calc(100% - 2rem)); max-height: 90vh; padding: 0; color: var(--ink); background: var(--raised); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); }
+    dialog::backdrop { background: rgba(34, 32, 27, .55); backdrop-filter: blur(3px); }
+    .dialog-head { position: sticky; top: 0; z-index: 1; display: flex; justify-content: space-between; gap: 1rem; padding: 1rem 1.2rem; background: var(--raised); border-bottom: 1px solid var(--line); }
+    .dialog-head h2 { margin: 0; font-size: 1.5rem; }
+    .dialog-body { padding: 1.2rem; overflow-y: auto; }
+    .close-button { width: 44px; height: 44px; border: 0; background: transparent; font-size: 1.4rem; }
+    .criteria-list { display: grid; gap: .55rem; }
+    .criterion { padding: .75rem; background: rgba(255,255,255,.4); border: 1px solid var(--line); border-radius: 7px; }
+    .criterion-head { display: flex; justify-content: space-between; gap: .75rem; }
+    .criterion p { margin: .3rem 0 0; font-size: .78rem; color: var(--ink-soft); }
+    .score-bar { height: 6px; margin-top: .45rem; background: var(--paper-deep); border-radius: 999px; overflow: hidden; }
+    .score-bar span { display: block; height: 100%; background: var(--sage); }
+    .toast-region { position: fixed; right: 1rem; bottom: 1rem; z-index: 100; display: grid; gap: .5rem; width: min(360px, calc(100% - 2rem)); }
+    .toast { padding: .8rem 1rem; color: white; background: var(--ink); border-radius: 7px; box-shadow: var(--shadow); font-size: .82rem; animation: toast-in 160ms ease; }
+    @keyframes toast-in { from { opacity: 0; transform: translateY(8px); } }
+
+    .mobile-tailor-tabs { display: none; }
+    .print-only { display: none; }
+
+    @media (max-width: 1050px) {
+      .job-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+      .filter-panel { grid-template-columns: repeat(2, 1fr); }
+      .filter-panel .search-field { grid-column: 1 / -1; }
+      .tracker-board { grid-template-columns: repeat(2, 1fr); overflow: visible; }
     }
-
-    .toast {
-      background-color: var(--border-dark);
-      color: #fff;
-      padding: 0.75rem 1.25rem;
-      font-size: 0.825rem;
-      border-radius: 1px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      animation: fadeIn 0.2s ease-in;
+    @media (max-width: 820px) {
+      .sidebar { display: none; }
+      .mobile-header { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding: .75rem 1rem; background: rgba(251,247,239,.96); border-bottom: 1px solid var(--line); backdrop-filter: blur(10px); }
+      .mobile-header .brand { font-size: 1.5rem; }
+      .mobile-menu { position: fixed; inset: 62px 0 auto 0; z-index: 29; padding: .75rem; background: var(--raised); border-bottom: 1px solid var(--line); box-shadow: var(--shadow); }
+      .mobile-menu[hidden] { display: none; }
+      .mobile-menu .nav-list { grid-template-columns: repeat(2, 1fr); }
+      main { margin-left: 0; }
+      .content { width: min(100% - 2rem, 1320px); padding-top: 1.2rem; }
+      .prototype-notice { grid-template-columns: auto 1fr; }
+      .prototype-notice .demo-badge { display: none; }
+      .panel-grid, .two-column, .tailor-layout { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 620px) {
+      h1 { font-size: 2.55rem; }
+      .content { width: min(100% - 1.25rem, 1320px); }
+      .view-header, .section-head { display: block; }
+      .view-header .button-row, .section-head .button { margin-top: 1rem; }
+      .metrics-grid, .job-grid, .filter-panel, .three-column, .choice-grid, .tracker-board { grid-template-columns: 1fr; }
+      .job-actions { flex-wrap: wrap; }
+      .job-actions .button { flex: 1; }
+      .results-toolbar { align-items: stretch; flex-direction: column; }
+      .fact-card { grid-template-columns: 1fr; }
+      .fact-actions { flex-wrap: wrap; }
+      .suggestion-columns { grid-template-columns: 1fr; }
+      dialog { width: 100%; max-height: 100vh; height: 100vh; margin: 0; border-radius: 0; }
+      .resume-sheet { min-height: 0; padding: 1rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
+    }
+    @media print {
+      @page { size: letter; margin: .5in; }
+      body * { visibility: hidden !important; }
+      #print-resume, #print-resume * { visibility: visible !important; }
+      #print-resume { position: absolute; inset: 0; width: 100%; min-height: 0; padding: 0; margin: 0; box-shadow: none; border: 0; }
+      #print-resume .fictional-watermark { display: block; }
     }
   </style>
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
 
-  <aside class="left-nav">
-    <div>
-      <div class="brand-header">
-        <a href="#" class="brand-title">Internship Copilot</a>
-        <div class="brand-subtitle">Editorial Career Engine</div>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand-row">
+        <a class="brand" href="#dashboard" data-nav="dashboard">Prospect</a>
+        <span class="demo-badge">Demo</span>
       </div>
-
-      <ul class="nav-menu">
-        <li class="nav-item">
-          <button class="active" onclick="switchNav('overview', this)">
-            <span>Overview</span>
-          </button>
-        </li>
-        <li class="nav-item">
-          <button onclick="switchNav('opportunities', this)">
-            <span>Opportunities</span>
-            <span class="nav-badge" id="badge-opps-count">0</span>
-          </button>
-        </li>
-        <li class="nav-item">
-          <button onclick="switchNav('resume', this)">
-            <span>My Résumé</span>
-          </button>
-        </li>
-        <li class="nav-item">
-          <button onclick="switchNav('applications', this)">
-            <span>Applications</span>
-            <span class="nav-badge" id="badge-apps-count">0</span>
-          </button>
-        </li>
-        <li class="nav-item">
-          <button onclick="switchNav('deadlines', this)">
-            <span>Deadlines</span>
-          </button>
-        </li>
-        <li class="nav-item">
-          <button onclick="switchNav('profile', this)">
-            <span>Profile</span>
-          </button>
-        </li>
-        <li class="nav-item">
-          <button onclick="switchNav('settings', this)">
-            <span>Settings</span>
-          </button>
-        </li>
-      </ul>
-    </div>
-
-    <div class="user-footer">
-      <div class="user-name" id="nav-user-name">Candidate User</div>
-      <div class="user-meta" id="nav-user-meta">Target: Summer 2027</div>
-    </div>
-  </aside>
-
-  <main class="main-content">
-    
-    <!-- VIEW 1: OVERVIEW -->
-    <section id="view-overview" class="page-view active">
-      <div class="system-status-pill">
-        <span class="status-dot"></span>
-        <span>Local Client Engine Active — Stored securely in browser memory</span>
+      <p class="brand-subtitle">Thoughtful internship decisions</p>
+      <nav class="nav-list" aria-label="Primary navigation">
+        <button class="nav-button" data-nav="dashboard" aria-current="page"><span class="nav-icon" aria-hidden="true">◫</span>Dashboard</button>
+        <button class="nav-button" data-nav="discover"><span class="nav-icon" aria-hidden="true">⌕</span>Discover</button>
+        <button class="nav-button" data-nav="resume"><span class="nav-icon" aria-hidden="true">▤</span>Résumé profile</button>
+        <button class="nav-button" data-nav="tailor"><span class="nav-icon" aria-hidden="true">✦</span>Tailoring studio</button>
+        <button class="nav-button" data-nav="tracker"><span class="nav-icon" aria-hidden="true">✓</span>Applications</button>
+        <button class="nav-button" data-nav="preferences"><span class="nav-icon" aria-hidden="true">⚙</span>Preferences</button>
+      </nav>
+      <div class="sidebar-footer">
+        <p>Prototype data stays in this browser profile. It is not encrypted cloud storage.</p>
+        <button class="reset-link" id="reset-demo">Reset demo data</button>
       </div>
+    </aside>
 
-      <h1 class="editorial-title">Welcome back.</h1>
-      <p class="editorial-subtitle">Review high-compatibility financial roles, active applications requiring your response, and imminent submission deadlines.</p>
+    <header class="mobile-header">
+      <button class="button small" id="menu-button" aria-expanded="false" aria-controls="mobile-menu">Menu</button>
+      <a class="brand" href="#dashboard" data-nav="dashboard">Prospect</a>
+      <span class="demo-badge">Demo</span>
+    </header>
+    <nav class="mobile-menu" id="mobile-menu" aria-label="Mobile navigation" hidden>
+      <div class="nav-list">
+        <button class="nav-button" data-nav="dashboard">Dashboard</button>
+        <button class="nav-button" data-nav="discover">Discover</button>
+        <button class="nav-button" data-nav="resume">Résumé profile</button>
+        <button class="nav-button" data-nav="tailor">Tailoring studio</button>
+        <button class="nav-button" data-nav="tracker">Applications</button>
+        <button class="nav-button" data-nav="preferences">Preferences</button>
+      </div>
+    </nav>
 
-      <!-- FIRST TIME USER RÉSUMÉ UPLOAD BANNER -->
-      <div class="editorial-card" id="overview-resume-banner">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
-          <div>
-            <h3 style="font-family: var(--font-serif); font-size: 1.25rem; font-weight: 600;">Initialize Your Verified Profile</h3>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;">Upload your primary PDF or plain-text résumé to extract verified qualifications.</p>
-          </div>
-          <button class="btn btn-sm btn-olive" onclick="switchNavTab('resume')">Upload Résumé →</button>
-        </div>
-      </div>
-
-      <!-- BEST NEW MATCHES -->
-      <div class="section-header">
-        <h2 class="section-title">Best New Matches</h2>
-        <button class="btn btn-outline btn-sm" onclick="switchNavTab('opportunities')">View All</button>
-      </div>
-      
-      <div id="overview-matches-container">
-        <!-- Rendered dynamically -->
-      </div>
-
-      <!-- APPLICATIONS REQUIRING ACTION -->
-      <div class="section-header">
-        <h2 class="section-title">Applications Requiring Action</h2>
-      </div>
-      <div id="overview-actions-container">
-        <!-- Rendered dynamically -->
-      </div>
-
-      <!-- UPCOMING DEADLINES -->
-      <div class="section-header">
-        <h2 class="section-title">Imminent Deadlines</h2>
-      </div>
-      <div id="overview-deadlines-container">
-        <!-- Rendered dynamically -->
-      </div>
-    </section>
-
-    <!-- VIEW 2: OPPORTUNITIES LISTING -->
-    <section id="view-opportunities" class="page-view">
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem;">
-        <div>
-          <h1 class="editorial-title">Internship Opportunities</h1>
-          <p class="editorial-subtitle" style="margin-bottom: 0;">Restrained, objective directory of Summer 2027 investment management and wealth roles.</p>
-        </div>
-        <button class="btn btn-outline" onclick="openModal('add-role-modal')">+ Add Internship Role</button>
-      </div>
-
-      <!-- FILTER CONTROLS -->
-      <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
-        <input type="text" id="filter-search" class="form-input" placeholder="Filter by firm name or keyword..." oninput="renderOpportunitiesTable()">
-        <select id="filter-eligibility" class="form-select" onchange="renderOpportunitiesTable()">
-          <option value="all">All Eligibility</option>
-          <option value="eligible">Fully Eligible</option>
-          <option value="review">Requires Graduation Check</option>
-        </select>
-        <select id="filter-status" class="form-select" onchange="renderOpportunitiesTable()">
-          <option value="all">All Statuses</option>
-          <option value="Not Applied">Not Applied</option>
-          <option value="Applied">Applied</option>
-          <option value="Preparing">Preparing</option>
-        </select>
-      </div>
-
-      <!-- OPPORTUNITIES TABLE -->
-      <div class="editorial-card" style="padding: 0; background: transparent; border: none;">
-        <table class="editorial-table">
-          <thead>
-            <tr>
-              <th>Company</th>
-              <th>Position</th>
-              <th>Location</th>
-              <th>Deadline</th>
-              <th>Fit Score</th>
-              <th>Eligibility</th>
-              <th>Status</th>
-              <th style="text-align: right;">Action</th>
-            </tr>
-          </thead>
-          <tbody id="opportunities-table-body">
-            <!-- Dynamically populated -->
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- VIEW 3: MY RÉSUMÉ & FACT BANK -->
-    <section id="view-resume" class="page-view">
-      <h1 class="editorial-title">My Résumé & Verified Fact Bank</h1>
-      <p class="editorial-subtitle">Upload your PDF résumé. Extracted facts serve as ground truth for all alignment assessments.</p>
-
-      <div class="editorial-card">
-        <h3 style="font-family: var(--font-serif); font-size: 1.2rem; margin-bottom: 1rem;">Primary Document Ingestion</h3>
-        
-        <div class="upload-dropzone" onclick="document.getElementById('pdf-file-input').click()">
-          <p style="font-weight: 500; font-size: 0.95rem;">Drop PDF or TXT résumé file here, or click to browse</p>
-          <p style="font-size: 0.775rem; color: var(--text-muted); margin-top: 0.4rem;">PDF text is parsed directly inside your browser window. Zero external transmission.</p>
-          <input type="file" id="pdf-file-input" accept=".pdf,.txt" style="display: none;" onchange="handleFileUpload(event)">
+    <main id="main-content" tabindex="-1">
+      <div class="content">
+        <div class="prototype-notice" role="note">
+          <span class="notice-icon" aria-hidden="true">ⓘ</span>
+          <p><strong>Browser-only learning prototype.</strong> Jobs, employers, pay, and sources are fictional. It does not search the internet or predict interviews. There is no login, live AI, secure cloud vault, or private PDF storage. Information you enter is stored in this browser and may be visible to other people using this browser profile.</p>
+          <span class="demo-badge">Fictional data</span>
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Master Plain-Text Résumé Payload</label>
-          <textarea id="master-resume-text" class="form-textarea" rows="7" placeholder="Extracted résumé text will appear here... You can also edit manually."></textarea>
-        </div>
-        <button class="btn btn-sm" onclick="saveMasterResumeText()">Save Résumé Payload</button>
+        <section class="view" id="view-dashboard" data-view-panel="dashboard"></section>
+        <section class="view" id="view-discover" data-view-panel="discover" hidden></section>
+        <section class="view" id="view-resume" data-view-panel="resume" hidden></section>
+        <section class="view" id="view-tailor" data-view-panel="tailor" hidden></section>
+        <section class="view" id="view-tracker" data-view-panel="tracker" hidden></section>
+        <section class="view" id="view-preferences" data-view-panel="preferences" hidden></section>
       </div>
-
-      <div class="section-header">
-        <h2 class="section-title">Verified Fact Inventory</h2>
-        <button class="btn btn-outline btn-sm" onclick="addVerifiedFact()">+ Add Ground Fact</button>
-      </div>
-
-      <div id="fact-inventory-list" style="display: flex; flex-direction: column; gap: 0.75rem;">
-        <!-- Dynamically rendered -->
-      </div>
-    </section>
-
-    <!-- VIEW 4: APPLICATIONS TRACKER -->
-    <section id="view-applications" class="page-view">
-      <h1 class="editorial-title">Application Pipeline</h1>
-      <p class="editorial-subtitle">Track your submission timeline, custom tailored drafts, and portal activity.</p>
-
-      <table class="editorial-table">
-        <thead>
-          <tr>
-            <th>Company</th>
-            <th>Role</th>
-            <th>Applied Date</th>
-            <th>Stage</th>
-            <th>Next Milestones</th>
-            <th style="text-align: right;">Update</th>
-          </tr>
-        </thead>
-        <tbody id="applications-table-body">
-          <!-- Dynamically populated -->
-        </tbody>
-      </table>
-    </section>
-
-    <!-- VIEW 5: DEADLINES CALENDAR -->
-    <section id="view-deadlines" class="page-view">
-      <h1 class="editorial-title">Upcoming Submission Deadlines</h1>
-      <p class="editorial-subtitle">Chronological timeline of application cutoffs for target Summer 2027 positions.</p>
-
-      <div id="deadlines-timeline-list" style="display: flex; flex-direction: column; gap: 1rem;">
-        <!-- Dynamically populated -->
-      </div>
-    </section>
-
-    <!-- VIEW 6: USER PROFILE -->
-    <section id="view-profile" class="page-view">
-      <h1 class="editorial-title">Candidate Profile</h1>
-      <p class="editorial-subtitle">Editable master metadata used for eligibility checking and auto-form verification.</p>
-
-      <div class="editorial-card" style="max-width: 650px;">
-        <form onsubmit="saveProfileForm(event)">
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-            <div class="form-group">
-              <label class="form-label">Full Name</label>
-              <input type="text" id="prof-fullName" class="form-input" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Email Address</label>
-              <input type="email" id="prof-email" class="form-input" required>
-            </div>
-          </div>
-
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-            <div class="form-group">
-              <label class="form-label">University / Institution</label>
-              <input type="text" id="prof-school" class="form-input" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Major / Specialization</label>
-              <input type="text" id="prof-major" class="form-input" required>
-            </div>
-          </div>
-
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-            <div class="form-group">
-              <label class="form-label">Expected Graduation Date</label>
-              <input type="text" id="prof-gradDate" class="form-input" placeholder="e.g. May 2028" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Work Authorization Status</label>
-              <select id="prof-workAuth" class="form-select">
-                <option value="US Citizen / Permanent Resident">US Citizen / Permanent Resident</option>
-                <option value="F-1 Visa (CPT/OPT Eligible)">F-1 Visa (CPT/OPT Eligible)</option>
-                <option value="Requires Employer Sponsorship">Requires Employer Sponsorship</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Target Locations</label>
-            <input type="text" id="prof-locations" class="form-input" placeholder="New York, NY; Boston, MA; Chicago, IL; Remote">
-          </div>
-
-          <button type="submit" class="btn btn-olive" style="margin-top: 0.5rem;">Save Profile Settings</button>
-        </form>
-      </div>
-    </section>
-
-    <!-- VIEW 7: SETTINGS & ARCHITECTURE -->
-    <section id="view-settings" class="page-view">
-      <h1 class="editorial-title">System Settings & Architecture</h1>
-      <p class="editorial-subtitle">Technical configuration, API credentials, and client/backend functionality status.</p>
-
-      <div class="editorial-card" style="max-width: 750px;">
-        <h3 style="font-family: var(--font-serif); font-size: 1.2rem; margin-bottom: 1rem;">Implementation Capability Matrix</h3>
-        
-        <table class="editorial-table" style="margin-bottom: 2rem;">
-          <thead>
-            <tr>
-              <th>Feature Component</th>
-              <th>Status</th>
-              <th>Architecture Note</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Aesop Editorial Aesthetic</td>
-              <td><span class="status-tag eligible">Active</span></td>
-              <td>Stone palette, Cormorant Garamond, clean spacing</td>
-            </tr>
-            <tr>
-              <td>Browser PDF Reader</td>
-              <td><span class="status-tag eligible">Active</span></td>
-              <td>Uses client-side PDF.js parsing</td>
-            </tr>
-            <tr>
-              <td>Fact Bank Alignment Engine</td>
-              <td><span class="status-tag eligible">Active</span></td>
-              <td>Local keyword set-intersection match</td>
-            </tr>
-            <tr>
-              <td>Full-Stack Node/Postgres Server</td>
-              <td><span class="status-tag action-required">Backend Spec</span></td>
-              <td>Requires server API deployment (pgvector)</td>
-            </tr>
-            <tr>
-              <td>Scheduled Web Scraper Crawls</td>
-              <td><span class="status-tag action-required">Backend Spec</span></td>
-              <td>Requires Python Celery task queue runner</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <h3 style="font-family: var(--font-serif); font-size: 1.2rem; margin-bottom: 1rem;">Optional LLM API Key (Client Assistance)</h3>
-        <div class="form-group">
-          <label class="form-label">OpenAI / Anthropic API Key (Stored strictly in localStorage)</label>
-          <input type="password" id="setting-api-key" class="form-input" placeholder="sk-..." onchange="saveApiKey(this.value)">
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <div id="job-detail-drawer" class="drawer-overlay" onclick="closeDrawer(event)">
-    <div class="drawer-content" onclick="event.stopPropagation()">
-      <div class="drawer-header">
-        <div>
-          <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted);" id="drawer-company">Company</div>
-          <h2 style="font-family: var(--font-serif); font-size: 1.75rem; font-weight: 600;" id="drawer-position">Position Title</h2>
-          <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;" id="drawer-meta">Location • Deadline</div>
-        </div>
-        <button class="btn btn-outline btn-sm" onclick="closeDrawerDirect()">✕ Close</button>
-      </div>
-
-      <!-- FIT ASSESSMENT DISCLAIMER -->
-      <div class="disclaimer-box">
-        <strong>Compatibility Assessment Note:</strong> The fit score displayed below reflects a deterministic profile-to-role compatibility analysis based on verified qualifications in your fact bank. It is not a guarantee or fabricated probability of receiving an offer.
-      </div>
-
-      <div style="display: flex; gap: 2rem; border-bottom: 1px solid var(--border-thin); padding-bottom: 1rem;">
-        <div>
-          <div class="form-label">Fit Compatibility Score</div>
-          <div class="fit-score-indicator" id="drawer-fit-score" style="color: var(--accent-olive); font-size: 1.75rem;">--%</div>
-        </div>
-        <div>
-          <div class="form-label">Eligibility Status</div>
-          <div id="drawer-eligibility-tag" style="margin-top: 0.2rem;"><span class="status-tag eligible">Eligible</span></div>
-        </div>
-        <div>
-          <div class="form-label">Application Status</div>
-          <div id="drawer-app-status" style="margin-top: 0.2rem;"><span class="status-tag">Not Applied</span></div>
-        </div>
-      </div>
-
-      <div>
-        <h3 style="font-family: var(--font-serif); font-size: 1.15rem; margin-bottom: 0.5rem;">Why It Matches Your Background</h3>
-        <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.6;" id="drawer-match-reason"></p>
-      </div>
-
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-        <div>
-          <h4 class="form-label" style="color: var(--accent-olive);">Matching Qualifications</h4>
-          <ul class="qualification-list" id="drawer-matching-quals">
-            <!-- Dynamically populated -->
-          </ul>
-        </div>
-        <div>
-          <h4 class="form-label" style="color: var(--accent-terracotta);">Missing Qualifications</h4>
-          <ul class="qualification-list" id="drawer-missing-quals">
-            <!-- Dynamically populated -->
-          </ul>
-        </div>
-      </div>
-
-      <div>
-        <h3 style="font-family: var(--font-serif); font-size: 1.15rem; margin-bottom: 0.5rem;">Full Job Description</h3>
-        <p style="font-size: 0.85rem; color: var(--text-main); white-space: pre-line; background: var(--bg-surface); padding: 1.25rem; border: 1px solid var(--border-thin);" id="drawer-description"></p>
-      </div>
-
-      <div>
-        <h3 style="font-family: var(--font-serif); font-size: 1.15rem; margin-bottom: 0.5rem;">Résumé Alignment Recommendations</h3>
-        <p style="font-size: 0.85rem; color: var(--text-muted);" id="drawer-recommendations"></p>
-      </div>
-
-      <div style="display: flex; gap: 1rem; border-top: 1px solid var(--border-thin); padding-top: 1.5rem; margin-top: 1rem;">
-        <a id="drawer-url-link" href="#" target="_blank" class="btn btn-outline" style="text-decoration:none;">View Original Posting ↗</a>
-        <button class="btn btn-olive" onclick="actionCreateTailoredResume()">Create Tailored Résumé Draft</button>
-        <button class="btn btn-outline" onclick="actionMarkAsApplied()">Mark as Applied</button>
-      </div>
-    </div>
+    </main>
   </div>
 
-  <div id="add-role-modal" class="modal-backdrop">
-    <div class="modal-box">
-      <h3 style="font-family: var(--font-serif); font-size: 1.4rem; margin-bottom: 1.25rem;">Add Target Internship Role</h3>
-      
-      <div class="form-group">
-        <label class="form-label">Company Name *</label>
-        <input type="text" id="add-role-company" class="form-input" placeholder="e.g. Bessemer Trust">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Position Title *</label>
-        <input type="text" id="add-role-title" class="form-input" placeholder="e.g. Summer 2027 Wealth Management Analyst">
-      </div>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-        <div class="form-group">
-          <label class="form-label">Location</label>
-          <input type="text" id="add-role-location" class="form-input" placeholder="New York, NY">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Deadline</label>
-          <input type="date" id="add-role-deadline" class="form-input">
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Posting URL</label>
-        <input type="url" id="add-role-url" class="form-input" placeholder="https://...">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Full Job Description Text *</label>
-        <textarea id="add-role-desc" class="form-textarea" rows="5" placeholder="Paste official job description text..."></textarea>
-      </div>
-
-      <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
-        <button class="btn btn-outline" onclick="closeModal('add-role-modal')">Cancel</button>
-        <button class="btn btn-olive" onclick="submitCustomRole()">Save Internship</button>
-      </div>
+  <dialog id="job-dialog" aria-labelledby="job-dialog-title">
+    <div class="dialog-head">
+      <h2 id="job-dialog-title">Job details</h2>
+      <button class="close-button" data-close-dialog="job-dialog" aria-label="Close job details">×</button>
     </div>
-  </div>
+    <div class="dialog-body" id="job-dialog-body"></div>
+  </dialog>
 
-  <div id="toast-container" class="toast-container"></div>
+  <dialog id="manual-job-dialog" aria-labelledby="manual-job-title">
+    <div class="dialog-head">
+      <h2 id="manual-job-title">Add a job manually</h2>
+      <button class="close-button" data-close-dialog="manual-job-dialog" aria-label="Close manual job form">×</button>
+    </div>
+    <div class="dialog-body">
+      <p class="privacy-card"><strong>Prototype reminder</strong>Use fictional information while testing. This entry is saved only in this browser.</p>
+      <form id="manual-job-form">
+        <div class="two-column">
+          <div class="field"><label for="manual-title">Position title</label><input id="manual-title" name="title" required maxlength="100"></div>
+          <div class="field"><label for="manual-company">Fictional employer</label><input id="manual-company" name="company" required maxlength="100"></div>
+          <div class="field"><label for="manual-sector">Sector</label><select id="manual-sector" name="sector" required></select></div>
+          <div class="field"><label for="manual-arrangement">Work arrangement</label><select id="manual-arrangement" name="arrangement"><option>In-person</option><option>Hybrid</option><option>Remote</option><option>Not disclosed</option></select></div>
+          <div class="field"><label for="manual-city">City</label><input id="manual-city" name="city" maxlength="80"></div>
+          <div class="field"><label for="manual-state">State or country</label><input id="manual-state" name="state" maxlength="80"></div>
+          <div class="field"><label for="manual-pay">Minimum hourly pay</label><input id="manual-pay" name="pay" type="number" min="0" max="200" step="0.5"></div>
+          <div class="field"><label for="manual-deadline">Application deadline</label><input id="manual-deadline" name="deadline" type="date"></div>
+        </div>
+        <div class="field" style="margin-top: .75rem"><label for="manual-description">Description</label><textarea id="manual-description" name="description" required maxlength="1800"></textarea></div>
+        <div class="field"><label for="manual-requirements">Requirements, one per line</label><textarea id="manual-requirements" name="requirements" maxlength="1200"></textarea></div>
+        <div class="button-row"><button class="button primary" type="submit">Add fictional job</button><button class="button" type="button" data-close-dialog="manual-job-dialog">Cancel</button></div>
+      </form>
+    </div>
+  </dialog>
+
+  <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
 
   <script>
-    // Configure PDF.js worker
-    if (window.pdfjsLib) {
-      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
-    }
+    'use strict';
 
-    // --- INITIAL SEEDED OPPORTUNITIES ---
-    const SEEDED_OPPORTUNITIES = [
-      {
-        id: 'opp-1',
-        company: 'Morgan Stanley',
-        position: '2027 Private Wealth Management Summer Analyst',
-        location: 'New York, NY',
-        postedDate: '2026-08-15',
-        deadline: '2026-11-15',
-        url: 'https://www.morganstanley.com/careers',
-        description: `The Private Wealth Management (PWM) Division at Morgan Stanley provides customized financial advice and asset allocation to ultra-high-net-worth individuals and family offices.\n\nQualifications:\n- Expected Graduation: December 2027 – June 2028.\n- Coursework in financial modeling, corporate finance, and asset allocation.\n- Proficiency in Excel, Bloomberg Terminal, and client portfolio presentations.`,
-        keywords: ['financial modeling', 'excel', 'asset allocation', 'bloomberg', 'client advisory', 'portfolio management'],
-        status: 'Not Applied',
-        gradRequirement: 'May 2028'
-      },
-      {
-        id: 'opp-2',
-        company: 'Northern Trust',
-        position: 'Summer 2027 Wealth Advisory & Trust Intern',
-        location: 'Chicago, IL',
-        postedDate: '2026-08-20',
-        deadline: '2026-10-31',
-        url: 'https://www.northerntrust.com',
-        description: `Work alongside senior advisors managing multi-generational trust accounts, estate planning structures, and risk metrics for high-net-worth families.\n\nRequirements:\n- Strong analytical foundation and written communication.\n- Basic knowledge of trust structures, tax planning, and financial statement analysis.`,
-        keywords: ['trust', 'estate planning', 'financial statement analysis', 'tax planning', 'communication'],
-        status: 'Preparing',
-        gradRequirement: 'May 2028'
-      },
-      {
-        id: 'opp-3',
-        company: 'Bessemer Trust',
-        position: 'Family Office & Private Banking Intern',
-        location: 'Boston, MA',
-        postedDate: '2026-09-01',
-        deadline: '2026-12-01',
-        url: 'https://www.bessemertrust.com',
-        description: `Participate in portfolio review meetings, client cash flow forecasting, and bespoke alternative investment tracking for ultra-wealthy families.\n\nPreferred Skills:\n- Python/R data analysis or advanced Excel modeling.\n- Passion for wealth preservation and financial markets.`,
-        keywords: ['python', 'excel modeling', 'portfolio review', 'cash flow', 'alternative investments'],
-        status: 'Not Applied',
-        gradRequirement: 'May 2028'
-      }
-    ];
+    // -------------------------------------------------------------------------
+    // Fictional seed data
+    // -------------------------------------------------------------------------
+    const STORAGE_KEY = 'prospect:v1';
+    const SECTORS = ['Wealth Management', 'Financial Planning', 'Asset Management', 'Investment Banking', 'Commercial Banking', 'Corporate Finance', 'Risk Management', 'Fintech'];
+    const ARRANGEMENTS = ['In-person', 'Hybrid', 'Remote', 'Not disclosed'];
+    const APP_STATUSES = ['Saved', 'Preparing', 'Applied', 'Interviewing', 'Offer', 'Rejected', 'Withdrawn'];
+    const FACT_STATUSES = ['confirmed', 'unverified', 'rejected', 'superseded'];
+    const FACT_TYPES = ['Education', 'Coursework', 'Experience', 'Skill', 'Credential', 'Project'];
 
-    // --- APPLICATION STATE ---
-    let appState = {
-      profile: {
-        fullName: 'Alex Vance',
-        email: 'alex.vance@university.edu',
-        school: 'Columbia University',
-        major: 'Financial Economics & Data Science',
-        gradDate: 'May 2028',
-        workAuth: 'US Citizen / Permanent Resident',
-        locations: 'New York, NY; Boston, MA; Chicago, IL'
-      },
-      masterResumeText: '',
-      facts: [
-        { id: 'f1', text: 'Enrolled at Columbia University (Graduation: May 2028)', category: 'Education' },
-        { id: 'f2', text: 'Completed coursework in Financial Modeling, Corporate Finance & Statistics', category: 'Coursework' },
-        { id: 'f3', text: 'Proficient in Excel (DCF Modeling, Pivot Tables) and Python Data Analysis', category: 'Skills' }
-      ],
-      opportunities: [],
-      activeOpportunityId: null
+    const sharedCriteria = {
+      finance: { label: 'Finance or business foundation', type: 'Required', weight: 30, direct: ['finance concentration', 'financial management', 'investments'], transfer: ['business administration', 'budget'], partial: ['business communication'] },
+      excel: { label: 'Excel and analytical ability', type: 'Required', weight: 25, direct: ['microsoft excel', 'financial modeling'], transfer: ['budget', 'financial summaries'], partial: ['investments'] },
+      communication: { label: 'Communication and client readiness', type: 'Responsibility', weight: 25, direct: ['client outreach', 'presented monthly budget', 'member outreach'], transfer: ['business communication', 'club members'], partial: ['treasury officer'] },
+      wealth: { label: 'Wealth-management context', type: 'Preferred', weight: 20, direct: ['wealth management', 'financial planning'], transfer: ['investments', 'financial management'], partial: ['finance concentration'] },
+      research: { label: 'Research and written analysis', type: 'Responsibility', weight: 25, direct: ['research reports', 'investment research'], transfer: ['financial summaries', 'financial modeling'], partial: ['investments'] },
+      banking: { label: 'Banking and credit context', type: 'Preferred', weight: 20, direct: ['commercial banking', 'credit analysis'], transfer: ['budget', 'financial management'], partial: ['finance concentration'] },
+      risk: { label: 'Risk awareness and controls', type: 'Preferred', weight: 20, direct: ['risk management', 'risk analysis'], transfer: ['budget controls', 'budget'], partial: ['financial management'] },
+      technology: { label: 'Technology and data fluency', type: 'Preferred', weight: 20, direct: ['fintech', 'data analysis'], transfer: ['microsoft excel', 'financial modeling'], partial: ['excel'] }
     };
 
-    // --- INITIALIZATION ---
-    window.addEventListener('DOMContentLoaded', () => {
-      loadState();
-      renderAllViews();
-    });
+    function criteriaFor(sector) {
+      const fourth = sector === 'Wealth Management' || sector === 'Financial Planning' ? sharedCriteria.wealth
+        : sector === 'Commercial Banking' ? sharedCriteria.banking
+        : sector === 'Risk Management' ? sharedCriteria.risk
+        : sector === 'Fintech' ? sharedCriteria.technology
+        : sharedCriteria.research;
+      return [sharedCriteria.finance, sharedCriteria.excel, sharedCriteria.communication, fourth].map(item => ({ ...item }));
+    }
+
+    const seedJobs = [
+      ['j1','Private Wealth Summer Analyst','Alder & Finch Advisory','Wealth Management','San Francisco','CA','Hybrid',30,36,'2027-01-18','Support adviser teams with portfolio reviews, client meeting preparation, and financial-plan updates.'],
+      ['j2','Client Advisory Intern','Northstar Harbor Wealth','Wealth Management','Los Angeles','CA','In-person',27,32,'2027-02-05','Prepare client materials, organize account information, and assist advisers with investment research.'],
+      ['j3','Financial Planning Summer Associate','Juniper House Planning','Financial Planning','San Diego','CA','Hybrid',25,30,'2027-02-12','Help build household cash-flow summaries and research retirement-planning questions.'],
+      ['j4','Portfolio Research Intern','Cedar Vale Asset Partners','Asset Management','New York','NY','In-person',38,44,'2027-01-12','Research public companies, maintain investment notes, and support portfolio reporting.'],
+      ['j5','Investment Banking Summer Analyst','Stonebridge Peak Capital','Investment Banking','New York','NY','In-person',45,52,'2026-12-15','Support valuation analysis, presentation materials, and transaction research for advisory teams.'],
+      ['j6','Commercial Credit Intern','Clearbrook Community Bank','Commercial Banking','Sacramento','CA','Hybrid',24,28,'2027-03-01','Review fictional borrower information and assist with credit summaries and portfolio monitoring.'],
+      ['j7','FP&A Summer Intern','Solstice Outdoor Group','Corporate Finance','Portland','OR','Hybrid',26,31,'2027-02-20','Support budgeting, forecast updates, and monthly performance reporting for operating teams.'],
+      ['j8','Enterprise Risk Intern','LatticePoint Holdings','Risk Management','Chicago','IL','Hybrid',29,34,'2027-01-30','Document process risks, organize control testing, and prepare concise findings for stakeholders.'],
+      ['j9','Financial Product Intern','Cobalt Horizon Labs','Fintech','Austin','TX','Remote',32,38,'2027-02-28','Research customer needs and help evaluate features for a fictional financial-planning platform.'],
+      ['j10','Family Office Summer Intern','Redwood Crest Partners','Wealth Management','Palo Alto','CA','In-person',31,37,'2027-01-25','Assist with investment summaries, manager research, and confidential meeting preparation.'],
+      ['j11','Institutional Client Intern','Meridian Grove Investments','Asset Management','Boston','MA','Hybrid',30,35,'2027-02-08','Support client reporting, presentation review, and market commentary preparation.'],
+      ['j12','Private Banking Intern','Harborline Private Bank','Wealth Management','Seattle','WA','Hybrid',28,33,'2027-02-14','Assist bankers with client preparation, lending summaries, and investment-service coordination.']
+    ].map(([id,title,company,sector,city,state,arrangement,payMin,payMax,deadline,description], index) => ({
+      id, title, company, sector, city, state, country: 'United States', arrangement, payMin, payMax, payType: 'Employer-disclosed fictional pay', deadline, term: 'Summer 2027', description,
+      requirements: ['Currently pursuing a business, finance, economics, or related degree', index % 3 === 0 ? 'Minimum 3.0 GPA' : 'Strong academic performance', 'Clear written and verbal communication'],
+      preferred: ['Microsoft Excel experience', sector === 'Wealth Management' ? 'Interest in client service and financial planning' : `Interest in ${sector.toLowerCase()}`],
+      criteria: criteriaFor(sector), source: 'Prospect fictional demo feed', lastChecked: 'September 7, 2026', requiresUSAuth: index % 4 !== 2, gradYears: index % 4 === 0 ? [2027, 2028] : [2028, 2029], minGpa: index % 3 === 0 ? 3.0 : null, manual: false
+    }));
+
+    const seedFacts = [
+      { id:'f1', type:'Education', text:'B.S. Business Administration, Finance concentration, Cal Poly, expected graduation May 2028.', status:'confirmed', source:'Fictional sample résumé · Education' },
+      { id:'f2', type:'Coursework', text:'Coursework includes Financial Management, Investments, and Business Communication.', status:'confirmed', source:'Fictional sample résumé · Education' },
+      { id:'f3', type:'Experience', text:'Managed a $12,000 student organization budget as a Student Treasury Officer.', status:'confirmed', source:'Fictional sample résumé · Experience' },
+      { id:'f4', type:'Experience', text:'Coordinated member outreach and presented monthly budget updates to club members.', status:'confirmed', source:'Fictional sample résumé · Experience' },
+      { id:'f5', type:'Skill', text:'Microsoft Excel.', status:'confirmed', source:'Fictional sample résumé · Skills' },
+      { id:'f6', type:'Credential', text:'Currently studying for the Securities Industry Essentials (SIE) exam; exam not yet passed.', status:'confirmed', source:'Fictional self-attested demo fact' },
+      { id:'f7', type:'Skill', text:'Financial modeling.', status:'unverified', source:'Fictional extracted suggestion awaiting review' }
+    ];
+
+    const defaultPreferences = {
+      sectors: ['Wealth Management','Financial Planning','Asset Management'], locations: 'Nationwide; California; West Coast', arrangements: ['Hybrid','In-person','Remote'], minPay: 25, targetTerm: 'Summer 2027', gradYear: 2028, workAuthorization: 'unknown', gpa: '', wealthPriority: true
+    };
+
+    function initialState() {
+      return {
+        version: 1,
+        savedJobIds: ['j1','j3','j10'],
+        applications: [
+          { id:'a1', jobId:'j1', status:'Preparing', appliedDate:'', nextAction:'Review tailored résumé', nextDate:'2026-09-14', notes:'Compare the first two evidence-backed edits.', resumeVersion:'Demo draft v1' },
+          { id:'a2', jobId:'j3', status:'Saved', appliedDate:'', nextAction:'Research the fictional role', nextDate:'2026-09-18', notes:'', resumeVersion:'Not selected' }
+        ],
+        facts: seedFacts.map(f => ({...f})),
+        preferences: {...defaultPreferences, sectors:[...defaultPreferences.sectors], arrangements:[...defaultPreferences.arrangements]},
+        manualJobs: [],
+        tailoring: {},
+        selectedTailorJobId: 'j1'
+      };
+    }
+
+    let state = loadState();
+    let activeView = validView(location.hash.slice(1)) ? location.hash.slice(1) : 'dashboard';
+    let filters = { search:'', sector:'all', location:'', arrangement:'all', minPay:'', savedOnly:false, sort:'recommended' };
+    let factFilter = 'all';
+    let lastDialogTrigger = null;
+
+    // -------------------------------------------------------------------------
+    // Defensive local state helpers
+    // -------------------------------------------------------------------------
+    function cleanText(value, max = 500) { return typeof value === 'string' ? value.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '').slice(0, max) : ''; }
+    function cleanId(value) { return cleanText(value, 80).replace(/[^a-zA-Z0-9_-]/g, ''); }
+    function allowed(value, choices, fallback) { return choices.includes(value) ? value : fallback; }
+    function clampNumber(value, min, max, fallback) { const n = Number(value); return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : fallback; }
+    function esc(value) { return String(value ?? '').replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char])); }
+    function clone(value) { return JSON.parse(JSON.stringify(value)); }
+
+    function normalizeState(raw) {
+      const base = initialState();
+      if (!raw || typeof raw !== 'object') return base;
+      const facts = Array.isArray(raw.facts) ? raw.facts.slice(0, 80).map((f, i) => ({
+        id: cleanId(f.id) || `fact_${i}_${Date.now()}`,
+        type: allowed(f.type, FACT_TYPES, 'Experience'),
+        text: cleanText(f.text, 700),
+        status: allowed(f.status, FACT_STATUSES, 'unverified'),
+        source: cleanText(f.source, 200) || 'User-entered browser fact'
+      })).filter(f => f.text) : base.facts;
+      const manualJobs = Array.isArray(raw.manualJobs) ? raw.manualJobs.slice(0, 30).map(normalizeManualJob).filter(Boolean) : [];
+      const applications = Array.isArray(raw.applications) ? raw.applications.slice(0, 80).map((a, i) => ({
+        id: cleanId(a.id) || `application_${i}`,
+        jobId: cleanId(a.jobId), status: allowed(a.status, APP_STATUSES, 'Saved'),
+        appliedDate: cleanText(a.appliedDate, 10), nextAction: cleanText(a.nextAction, 160), nextDate: cleanText(a.nextDate, 10), notes: cleanText(a.notes, 1000), resumeVersion: cleanText(a.resumeVersion, 80),
+        jobSnapshot: normalizeManualJob(a.jobSnapshot)
+      })).filter(a => a.jobId) : base.applications;
+      const p = raw.preferences && typeof raw.preferences === 'object' ? raw.preferences : {};
+      const preferences = {
+        sectors: Array.isArray(p.sectors) ? p.sectors.filter(s => SECTORS.includes(s)) : base.preferences.sectors,
+        locations: cleanText(p.locations, 300) || base.preferences.locations,
+        arrangements: Array.isArray(p.arrangements) ? p.arrangements.filter(a => ARRANGEMENTS.includes(a)) : base.preferences.arrangements,
+        minPay: clampNumber(p.minPay, 0, 200, base.preferences.minPay), targetTerm: 'Summer 2027',
+        gradYear: Math.round(clampNumber(p.gradYear, 2026, 2035, 2028)), workAuthorization: allowed(p.workAuthorization, ['yes','no','unknown'], 'unknown'),
+        gpa: p.gpa === '' ? '' : clampNumber(p.gpa, 0, 4, ''), wealthPriority: Boolean(p.wealthPriority)
+      };
+      const saved = Array.isArray(raw.savedJobIds) ? [...new Set(raw.savedJobIds.map(cleanId).filter(Boolean))].slice(0, 100) : base.savedJobIds;
+      const tailoring = raw.tailoring && typeof raw.tailoring === 'object' && !Array.isArray(raw.tailoring) ? raw.tailoring : {};
+      return { version:1, savedJobIds:saved, applications, facts, preferences, manualJobs, tailoring, selectedTailorJobId:cleanId(raw.selectedTailorJobId) || base.selectedTailorJobId };
+    }
+
+    function normalizeManualJob(j) {
+      if (!j || typeof j !== 'object') return null;
+      const id = cleanId(j.id); const title = cleanText(j.title,100); const company = cleanText(j.company,100);
+      if (!id || !title || !company) return null;
+      const sector = allowed(j.sector, SECTORS, 'Wealth Management');
+      return {
+        id, title, company, sector, city:cleanText(j.city,80), state:cleanText(j.state,80), country:'United States', arrangement:allowed(j.arrangement, ARRANGEMENTS, 'Not disclosed'),
+        payMin:j.payMin === null ? null : clampNumber(j.payMin,0,200,null), payMax:j.payMax === null ? null : clampNumber(j.payMax,0,200,null), payType:'User-entered', deadline:cleanText(j.deadline,10), term:'Summer 2027',
+        description:cleanText(j.description,1800), requirements:Array.isArray(j.requirements) ? j.requirements.map(x=>cleanText(x,240)).filter(Boolean).slice(0,12) : [], preferred:['Interest in finance'],
+        criteria:criteriaFor(sector), source:'Manual browser entry', lastChecked:'Not externally checked', requiresUSAuth:false, gradYears:[2027,2028,2029], minGpa:null, manual:true
+      };
+    }
 
     function loadState() {
-      const savedProfile = localStorage.getItem('aesop_copilot_profile');
-      if (savedProfile) appState.profile = JSON.parse(savedProfile);
-
-      const savedResume = localStorage.getItem('aesop_copilot_resume');
-      if (savedResume) appState.masterResumeText = savedResume;
-
-      const savedFacts = localStorage.getItem('aesop_copilot_facts');
-      if (savedFacts) appState.facts = JSON.parse(savedFacts);
-
-      const savedOpps = localStorage.getItem('aesop_copilot_opps');
-      if (savedOpps) {
-        appState.opportunities = JSON.parse(savedOpps);
-      } else {
-        appState.opportunities = [...SEEDED_OPPORTUNITIES];
-      }
-
-      document.getElementById('master-resume-text').value = appState.masterResumeText;
-      syncProfileFieldsToUI();
-    }
-
-    function saveState() {
-      localStorage.setItem('aesop_copilot_profile', JSON.stringify(appState.profile));
-      localStorage.setItem('aesop_copilot_resume', appState.masterResumeText);
-      localStorage.setItem('aesop_copilot_facts', JSON.stringify(appState.facts));
-      localStorage.setItem('aesop_copilot_opps', JSON.stringify(appState.opportunities));
-    }
-
-    function syncProfileFieldsToUI() {
-      document.getElementById('nav-user-name').innerText = appState.profile.fullName || 'Candidate User';
-      document.getElementById('nav-user-meta').innerText = `Graduation: ${appState.profile.gradDate}`;
-
-      document.getElementById('prof-fullName').value = appState.profile.fullName || '';
-      document.getElementById('prof-email').value = appState.profile.email || '';
-      document.getElementById('prof-school').value = appState.profile.school || '';
-      document.getElementById('prof-major').value = appState.profile.major || '';
-      document.getElementById('prof-gradDate').value = appState.profile.gradDate || '';
-      document.getElementById('prof-workAuth').value = appState.profile.workAuth || 'US Citizen / Permanent Resident';
-      document.getElementById('prof-locations').value = appState.profile.locations || '';
-
-      // Check overview banner visibility
-      const banner = document.getElementById('overview-resume-banner');
-      if (appState.masterResumeText.trim().length > 0) {
-        banner.style.display = 'none';
-      } else {
-        banner.style.display = 'block';
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? normalizeState(JSON.parse(raw)) : initialState();
+      } catch (error) {
+        setTimeout(() => toast('Saved browser data could not be read. Demo defaults were restored.'), 0);
+        return initialState();
       }
     }
 
-    // --- NAVIGATION LOGIC ---
-    function switchNav(viewId, buttonEl) {
-      document.querySelectorAll('.nav-menu button').forEach(btn => btn.classList.remove('active'));
-      document.querySelectorAll('.page-view').forEach(view => view.classList.remove('active'));
-
-      if (buttonEl) buttonEl.classList.add('active');
-      const targetView = document.getElementById(`view-${viewId}`);
-      if (targetView) targetView.classList.add('active');
-
-      if (viewId === 'overview') renderOverview();
-      if (viewId === 'opportunities') renderOpportunitiesTable();
-      if (viewId === 'resume') renderFactInventory();
-      if (viewId === 'applications') renderApplicationsPipeline();
-      if (viewId === 'deadlines') renderDeadlinesTimeline();
+    function saveState(message) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        if (message) toast(message);
+      } catch (error) {
+        toast('Your change is active for now, but this browser could not save it.');
+      }
     }
 
-    function switchNavTab(viewId) {
-      const btn = document.querySelector(`.nav-menu button[onclick*="${viewId}"]`);
-      switchNav(viewId, btn);
-    }
+    function allJobs() { return [...seedJobs, ...state.manualJobs]; }
+    function getJob(id) { return allJobs().find(job => job.id === id); }
+    function getApplicationJob(application) { return getJob(application.jobId) || application.jobSnapshot || null; }
+    function validView(view) { return ['dashboard','discover','resume','tailor','tracker','preferences'].includes(view); }
+    function formatPay(job) { return job.payMin == null ? 'Pay not disclosed' : `$${Number(job.payMin).toFixed(0)}–$${Number(job.payMax ?? job.payMin).toFixed(0)}/hr`; }
+    function formatDate(value) { if (!value) return 'Not set'; const d = new Date(`${value}T12:00:00`); return Number.isNaN(d.getTime()) ? 'Not set' : d.toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}); }
+    function titleCase(value) { return String(value).replace(/\b\w/g, c => c.toUpperCase()); }
 
-    // --- COMPATIBILITY ANALYSIS ENGINE ---
-    function computeCompatibility(opp) {
-      const payload = (appState.masterResumeText + ' ' + appState.facts.map(f => f.text).join(' ')).toLowerCase();
-      const keywords = opp.keywords || [];
+    // -------------------------------------------------------------------------
+    // Transparent scoring
+    // -------------------------------------------------------------------------
+    function confirmedFacts() { return state.facts.filter(f => f.status === 'confirmed'); }
 
-      if (keywords.length === 0) return { score: 60, matched: [], missing: [] };
-
-      const matched = [];
-      const missing = [];
-
-      keywords.forEach(kw => {
-        if (payload.includes(kw.toLowerCase())) {
-          matched.push(kw);
-        } else {
-          missing.push(kw);
+    function classifyCriterion(criterion) {
+      const facts = confirmedFacts();
+      const levels = [
+        { key:'direct', value:1, label:'Direct verified evidence' },
+        { key:'transfer', value:.7, label:'Strong transferable evidence' },
+        { key:'partial', value:.4, label:'Partial evidence' }
+      ];
+      for (const level of levels) {
+        for (const fact of facts) {
+          const text = fact.text.toLowerCase();
+          const hit = (criterion[level.key] || []).find(term => text.includes(term.toLowerCase()));
+          if (hit) return { value:level.value, label:level.label, fact, term:hit };
         }
-      });
-
-      const score = Math.round((matched.length / keywords.length) * 100);
-      return { score, matched, missing };
-    }
-
-    function checkEligibility(opp) {
-      if (!appState.profile.gradDate) return { isEligible: true, label: 'Fully Eligible' };
-      if (opp.gradRequirement && opp.gradRequirement === appState.profile.gradDate) {
-        return { isEligible: true, label: 'Fully Eligible' };
       }
-      return { isEligible: true, label: 'Matches Target Year' };
+      return { value:0, label:'No documented evidence', fact:null, term:null };
     }
 
-    // --- VIEW RENDERING FUNCTIONS ---
-    function renderAllViews() {
-      renderOverview();
-      renderOpportunitiesTable();
-      renderFactInventory();
-      renderApplicationsPipeline();
-      renderDeadlinesTimeline();
-
-      // Update nav badges
-      document.getElementById('badge-opps-count').innerText = appState.opportunities.length;
-      document.getElementById('badge-apps-count').innerText = appState.opportunities.filter(o => o.status === 'Applied').length;
+    function alignmentFor(job) {
+      const rows = job.criteria.map(criterion => ({ criterion, evidence:classifyCriterion(criterion) }));
+      const totalWeight = rows.reduce((sum,row)=>sum+row.criterion.weight,0) || 1;
+      const score = Math.round(rows.reduce((sum,row)=>sum + row.criterion.weight * row.evidence.value,0) / totalWeight * 100);
+      const coverage = Math.round(rows.reduce((sum,row)=>sum + (row.evidence.fact ? row.criterion.weight : 0),0) / totalWeight * 100);
+      return { score, coverage, rows };
     }
 
-    function renderOverview() {
-      const matchesContainer = document.getElementById('overview-matches-container');
-      const actionsContainer = document.getElementById('overview-actions-container');
-      const deadlinesContainer = document.getElementById('overview-deadlines-container');
+    function eligibilityFor(job) {
+      const checks = [];
+      const grad = Number(state.preferences.gradYear);
+      checks.push(job.gradYears.includes(grad)
+        ? {label:'Graduation window',status:'good',detail:`Your disclosed ${grad} graduation year is within ${job.gradYears.join(' or ')}.`}
+        : {label:'Graduation window',status:'bad',detail:`This role lists ${job.gradYears.join(' or ')}, while your profile says ${grad}.`});
+      if (job.requiresUSAuth) {
+        const auth = state.preferences.workAuthorization;
+        checks.push(auth === 'yes' ? {label:'Work authorization',status:'good',detail:'Your profile indicates U.S. work authorization.'}
+          : auth === 'no' ? {label:'Work authorization',status:'bad',detail:'Your profile indicates a possible conflict with the disclosed requirement.'}
+          : {label:'Work authorization',status:'unknown',detail:'Your work-authorization information is unknown.'});
+      }
+      if (job.minGpa) {
+        const gpa = state.preferences.gpa;
+        checks.push(gpa === '' ? {label:'GPA requirement',status:'unknown',detail:`The role lists ${job.minGpa.toFixed(1)}+, but your profile has no GPA.`}
+          : Number(gpa) >= job.minGpa ? {label:'GPA requirement',status:'good',detail:`Your disclosed GPA meets the ${job.minGpa.toFixed(1)} requirement.`}
+          : {label:'GPA requirement',status:'bad',detail:`Your disclosed GPA is below the listed ${job.minGpa.toFixed(1)} requirement.`});
+      }
+      const overall = checks.some(c=>c.status==='bad') ? 'bad' : checks.some(c=>c.status==='unknown') ? 'unknown' : 'good';
+      const label = overall === 'bad' ? 'Potential conflict' : overall === 'unknown' ? 'More information needed' : 'No conflict found';
+      return { overall, label, checks };
+    }
 
-      // Best matches
-      const sortedByFit = [...appState.opportunities].map(o => ({ ...o, fit: computeCompatibility(o) }))
-        .sort((a, b) => b.fit.score - a.fit.score).slice(0, 3);
+    function preferenceFor(job) {
+      const p = state.preferences;
+      const components = [];
+      const sectorMatch = p.sectors.includes(job.sector) ? 1 : (p.wealthPriority && job.sector === 'Wealth Management' ? 1 : .25);
+      components.push({label:'Sector',weight:40,value:sectorMatch,known:true});
+      const locationTerms = p.locations.toLowerCase().split(/[;,]/).map(x=>x.trim()).filter(Boolean);
+      const geoText = `${job.city} ${job.state} ${job.country}`.toLowerCase();
+      const nationwide = locationTerms.some(x=>x.includes('nationwide') || x.includes('united states'));
+      const locationMatch = nationwide || locationTerms.some(x=>geoText.includes(x));
+      const arrangementMatch = p.arrangements.includes(job.arrangement);
+      components.push({label:'Geography & work mode',weight:25,value:(Number(locationMatch)+Number(arrangementMatch))/2,known:true});
+      components.push({label:'Compensation',weight:20,value:job.payMin == null ? 0 : Math.min(1, job.payMin / Math.max(1,p.minPay)),known:job.payMin != null});
+      components.push({label:'Dates',weight:10,value:job.term === p.targetTerm ? 1 : 0,known:Boolean(job.term)});
+      components.push({label:'Other preferences',weight:5,value:job.sector === 'Wealth Management' && p.wealthPriority ? 1 : .6,known:true});
+      const known = components.filter(c=>c.known); const knownWeight = known.reduce((s,c)=>s+c.weight,0) || 1;
+      const score = Math.round(known.reduce((s,c)=>s+c.weight*c.value,0)/knownWeight*100);
+      return { score, coverage:Math.round(knownWeight), components };
+    }
 
-      matchesContainer.innerHTML = `
-        <table class="editorial-table">
-          <thead>
-            <tr>
-              <th>Company</th>
-              <th>Position</th>
-              <th>Deadline</th>
-              <th>Fit Assessment</th>
-              <th style="text-align: right;">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${sortedByFit.map(o => `
-              <tr>
-                <td style="font-weight:600;">${escapeHTML(o.company)}</td>
-                <td>${escapeHTML(o.position)}</td>
-                <td style="color: var(--text-muted);">${escapeHTML(o.deadline)}</td>
-                <td><span class="fit-score-indicator" style="color:var(--accent-olive);">${o.fit.score}%</span></td>
-                <td style="text-align: right;">
-                  <button class="btn btn-outline btn-sm" onclick="openDrawer('${o.id}')">Inspect Opportunity →</button>
-                </td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-      `;
+    function scoreJob(job) {
+      const alignment = alignmentFor(job); const eligibility = eligibilityFor(job); const preference = preferenceFor(job);
+      const priority = state.preferences.wealthPriority && job.sector === 'Wealth Management' ? 8 : 0;
+      return { alignment, eligibility, preference, rank:alignment.score*.55 + preference.score*.35 + priority };
+    }
 
-      // Actions requiring response
-      const preparingRoles = appState.opportunities.filter(o => o.status === 'Preparing' || o.status === 'Not Applied');
-      actionsContainer.innerHTML = preparingRoles.length > 0 ? `
-        <table class="editorial-table">
-          <thead>
-            <tr>
-              <th>Company</th>
-              <th>Position</th>
-              <th>Current Status</th>
-              <th style="text-align: right;">Next Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${preparingRoles.map(o => `
-              <tr>
-                <td style="font-weight:600;">${escapeHTML(o.company)}</td>
-                <td>${escapeHTML(o.position)}</td>
-                <td><span class="status-tag action-required">${escapeHTML(o.status)}</span></td>
-                <td style="text-align: right;">
-                  <button class="btn btn-sm" onclick="openDrawer('${o.id}')">Tailor & Apply</button>
-                </td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-      ` : `<p style="font-size:0.85rem; color:var(--text-muted);">No urgent actions pending.</p>`;
+    // -------------------------------------------------------------------------
+    // Render helpers
+    // -------------------------------------------------------------------------
+    function statusBadge(eligibility) {
+      const cls = eligibility.overall === 'good' ? 'status-good' : eligibility.overall === 'bad' ? 'status-bad' : 'status-warn';
+      const icon = eligibility.overall === 'good' ? '✓' : eligibility.overall === 'bad' ? '!' : '?';
+      return `<span class="status-badge ${cls}"><span aria-hidden="true">${icon}</span>${esc(eligibility.label)}</span>`;
+    }
 
-      // Upcoming deadlines
-      const upcoming = [...appState.opportunities].sort((a,b) => new Date(a.deadline) - new Date(b.deadline)).slice(0, 3);
-      deadlinesContainer.innerHTML = `
-        <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:1rem;">
-          ${upcoming.map(o => `
-            <div class="editorial-card" style="margin-bottom:0;">
-              <div style="font-size:0.75rem; text-transform:uppercase; color:var(--accent-terracotta); font-weight:600;">Deadline: ${escapeHTML(o.deadline)}</div>
-              <h4 style="font-family:var(--font-serif); font-size:1.1rem; margin-top:0.25rem;">${escapeHTML(o.company)}</h4>
-              <p style="font-size:0.8rem; color:var(--text-muted);">${escapeHTML(o.position)}</p>
-            </div>
-          `).join('')}
+    function jobCard(job) {
+      const scores = scoreJob(job); const saved = state.savedJobIds.includes(job.id);
+      return `<article class="job-card">
+        <div class="button-row"><span class="pill ${job.sector==='Wealth Management'?'wealth-pill':''}">${esc(job.sector)}</span>${job.manual?'<span class="pill">Manual</span>':''}</div>
+        <h3>${esc(job.title)}</h3><p class="company">${esc(job.company)} · Fictional</p>
+        <div class="job-meta"><span>⌖ ${esc(job.city)}, ${esc(job.state)} · ${esc(job.arrangement)}</span><span>◷ ${esc(formatPay(job))}</span><span>○ Deadline ${esc(formatDate(job.deadline))}</span></div>
+        ${statusBadge(scores.eligibility)}
+        <div class="job-score-row">
+          <div class="mini-score"><strong>${scores.alignment.score}%</strong><span>Documented alignment · ${scores.alignment.coverage}% evidence coverage</span></div>
+          <div class="mini-score"><strong>${scores.preference.score}%</strong><span>Preference Fit · ${scores.preference.coverage}% data coverage</span></div>
         </div>
-      `;
+        <div class="job-actions">
+          <button class="button small ${saved?'sage':''}" data-action="toggle-save" data-job-id="${esc(job.id)}" aria-pressed="${saved}">${saved?'Saved':'Save'}</button>
+          <button class="button small" data-action="track-job" data-job-id="${esc(job.id)}">Track</button>
+          <button class="button small primary" data-action="view-job" data-job-id="${esc(job.id)}">Review role</button>
+        </div>
+      </article>`;
     }
 
-    function renderOpportunitiesTable() {
-      const tbody = document.getElementById('opportunities-table-body');
-      const search = document.getElementById('filter-search').value.toLowerCase();
-      const eligFilter = document.getElementById('filter-eligibility').value;
-      const statusFilter = document.getElementById('filter-status').value;
-
-      const filtered = appState.opportunities.filter(o => {
-        const matchesSearch = o.company.toLowerCase().includes(search) || o.position.toLowerCase().includes(search);
-        const matchesStatus = statusFilter === 'all' || o.status === statusFilter;
-        return matchesSearch && matchesStatus;
-      });
-
-      tbody.innerHTML = filtered.map(o => {
-        const fit = computeCompatibility(o);
-        const elig = checkEligibility(o);
-        return `
-          <tr>
-            <td style="font-weight:600;">${escapeHTML(o.company)}</td>
-            <td>${escapeHTML(o.position)}</td>
-            <td style="color:var(--text-muted);">${escapeHTML(o.location)}</td>
-            <td style="color:var(--text-muted);">${escapeHTML(o.deadline)}</td>
-            <td><span class="fit-score-indicator">${fit.score}%</span></td>
-            <td><span class="status-tag eligible">${elig.label}</span></td>
-            <td><span class="status-tag">${escapeHTML(o.status)}</span></td>
-            <td style="text-align:right;">
-              <button class="btn btn-outline btn-sm" onclick="openDrawer('${o.id}')">View Details</button>
-            </td>
-          </tr>
-        `;
-      }).join('');
-    }
-
-    function renderFactInventory() {
-      const list = document.getElementById('fact-inventory-list');
-      list.innerHTML = appState.facts.map((fact, idx) => `
-        <div style="background:var(--bg-surface); border:1px solid var(--border-thin); padding:0.85rem 1.1rem; display:flex; justify-content:space-between; align-items:center;">
-          <div>
-            <span style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-muted); font-weight:600;">${escapeHTML(fact.category)}</span>
-            <p style="font-size:0.875rem; font-weight:500; margin-top:0.1rem;">${escapeHTML(fact.text)}</p>
+    function renderDashboard() {
+      const jobs = allJobs().map(job=>({job,scores:scoreJob(job)})).sort((a,b)=>b.scores.rank-a.scores.rank);
+      const activeApps = state.applications.filter(a=>!['Rejected','Withdrawn'].includes(a.status));
+      const next = activeApps.filter(a=>a.nextDate).sort((a,b)=>a.nextDate.localeCompare(b.nextDate))[0];
+      const nextJob = next && getApplicationJob(next);
+      document.getElementById('view-dashboard').innerHTML = `
+        <header class="view-header"><div><span class="eyebrow">Summer 2027 preparation</span><h1 tabindex="-1">Build a more thoughtful application.</h1><p class="view-intro">Use verified facts, transparent matching, and a calm workflow to decide where your effort belongs.</p></div><div class="button-row"><button class="button" data-nav="resume">Review facts</button><button class="button primary" data-nav="discover">Explore roles</button></div></header>
+        <div class="metrics-grid">
+          <article class="metric-card"><div class="metric-label">Fictional roles</div><span class="display-number">${allJobs().length}</span><span class="metric-note">Across ${SECTORS.length} finance sectors</span></article>
+          <article class="metric-card"><div class="metric-label">Saved roles</div><span class="display-number">${state.savedJobIds.length}</span><span class="metric-note">Stored in this browser</span></article>
+          <article class="metric-card"><div class="metric-label">Active applications</div><span class="display-number">${activeApps.length}</span><span class="metric-note">Demo pipeline records</span></article>
+          <article class="metric-card"><div class="metric-label">Next action</div><span class="display-number" style="font-size:1.35rem">${next?esc(formatDate(next.nextDate)):'None set'}</span><span class="metric-note">${nextJob?esc(nextJob.title):'Add an action in the tracker'}</span></article>
+        </div>
+        <div class="section-head"><div><span class="eyebrow">Recommended starting points</span><h2>Best documented matches</h2></div><button class="button small" data-nav="discover">View all roles</button></div>
+        <div class="job-grid">${jobs.slice(0,3).map(x=>jobCard(x.job)).join('')}</div>
+        <div class="section-head"><div><span class="eyebrow">Clarity before confidence</span><h2>What each signal means</h2></div></div>
+        <div class="panel-grid">
+          <div class="panel score-explainer">
+            <article><h3>Eligibility review</h3><p>Organizes disclosed graduation, GPA, and work-authorization information. It is not an employer or legal determination.</p></article>
+            <article><h3>Documented alignment</h3><p>Measures how much of a job's weighted criteria is supported by confirmed résumé facts—not how likely you are to be hired.</p></article>
+            <article><h3>Preference Fit</h3><p>Compares sector, location, work mode, pay, and dates with the preferences you saved.</p></article>
           </div>
-          <button class="btn btn-outline btn-sm" onclick="removeFact(${idx})" style="color:var(--accent-terracotta);">Delete</button>
+          <div class="panel"><span class="eyebrow">Your next actions</span><ul class="action-list">${renderNextActions(activeApps)}</ul></div>
+        </div>`;
+    }
+
+    function renderNextActions(apps) {
+      const rows = apps.filter(a=>a.nextAction).sort((a,b)=>(a.nextDate||'9999').localeCompare(b.nextDate||'9999')).slice(0,5);
+      if (!rows.length) return '<li><span class="muted">No next actions yet. Add one in Applications.</span></li>';
+      return rows.map(a=>{ const job=getApplicationJob(a); return `<li><span class="action-date">${esc(formatDate(a.nextDate))}</span><span><strong>${esc(a.nextAction)}</strong><br><span class="tiny">${job?esc(job.title):'Saved opportunity'}</span></span></li>`; }).join('');
+    }
+
+    function filteredJobs() {
+      const search = filters.search.toLowerCase(); const loc = filters.location.toLowerCase();
+      let jobs = allJobs().filter(job => {
+        const hay = `${job.title} ${job.company} ${job.sector} ${job.description}`.toLowerCase();
+        return (!search || hay.includes(search)) && (filters.sector==='all'||job.sector===filters.sector) && (!loc||`${job.city} ${job.state} ${job.country}`.toLowerCase().includes(loc)) && (filters.arrangement==='all'||job.arrangement===filters.arrangement) && (!filters.minPay || (job.payMin!=null && job.payMin>=Number(filters.minPay))) && (!filters.savedOnly||state.savedJobIds.includes(job.id));
+      });
+      jobs.sort((a,b)=> filters.sort==='pay' ? (b.payMin||-1)-(a.payMin||-1) : filters.sort==='deadline' ? (a.deadline||'9999').localeCompare(b.deadline||'9999') : scoreJob(b).rank-scoreJob(a).rank);
+      return jobs;
+    }
+
+    function renderDiscover() {
+      const jobs = filteredJobs();
+      document.getElementById('view-discover').innerHTML = `
+        <header class="view-header"><div><span class="eyebrow">Fictional opportunity library</span><h1 tabindex="-1">Discover with context.</h1><p class="view-intro">Filter twelve sample internships and inspect exactly why each role does—or does not—align with the fictional profile.</p></div><button class="button primary" data-action="open-manual-job">Add job manually</button></header>
+        <form class="filter-panel" id="filter-form">
+          <div class="field search-field"><label for="filter-search">Search roles</label><input id="filter-search" name="search" value="${esc(filters.search)}" placeholder="Try wealth, research, or Excel"></div>
+          <div class="field"><label for="filter-sector">Sector</label><select id="filter-sector" name="sector"><option value="all">All sectors</option>${SECTORS.map(s=>`<option ${filters.sector===s?'selected':''}>${esc(s)}</option>`).join('')}</select></div>
+          <div class="field"><label for="filter-location">Location</label><input id="filter-location" name="location" value="${esc(filters.location)}" placeholder="City or state"></div>
+          <div class="field"><label for="filter-arrangement">Work mode</label><select id="filter-arrangement" name="arrangement"><option value="all">All arrangements</option>${ARRANGEMENTS.map(a=>`<option ${filters.arrangement===a?'selected':''}>${esc(a)}</option>`).join('')}</select></div>
+          <div class="field"><label for="filter-pay">Minimum $/hour</label><input id="filter-pay" name="minPay" type="number" min="0" max="200" value="${esc(filters.minPay)}"></div>
+          <label class="checkbox-row"><input type="checkbox" name="savedOnly" ${filters.savedOnly?'checked':''}> Saved jobs only</label>
+          <button class="button" type="button" data-action="reset-filters">Reset filters</button>
+        </form>
+        <div class="results-toolbar"><p aria-live="polite"><strong>${jobs.length}</strong> fictional internship${jobs.length===1?'':'s'} found</p><div class="field"><label for="sort-jobs">Sort</label><select id="sort-jobs"><option value="recommended" ${filters.sort==='recommended'?'selected':''}>Recommended</option><option value="pay" ${filters.sort==='pay'?'selected':''}>Highest pay</option><option value="deadline" ${filters.sort==='deadline'?'selected':''}>Soonest deadline</option></select></div></div>
+        ${jobs.length ? `<div class="job-grid">${jobs.map(jobCard).join('')}</div>` : `<div class="empty-state"><h3>No roles match those filters.</h3><p>Try removing a filter or restoring the demo defaults.</p><button class="button" data-action="reset-filters">Reset filters</button></div>`}`;
+      attachFilterListeners();
+    }
+
+    function renderResume() {
+      const facts = state.facts.filter(f=>factFilter==='all'||f.status===factFilter);
+      document.getElementById('view-resume').innerHTML = `
+        <header class="view-header"><div><span class="eyebrow">Evidence before editing</span><h1 tabindex="-1">Résumé profile.</h1><p class="view-intro">Only facts marked Confirmed can support alignment scores and tailoring suggestions.</p></div><button class="button" data-action="restore-facts">Restore fictional sample</button></header>
+        <div class="privacy-card"><strong>Do not enter sensitive information into this prototype.</strong>There is no account or encrypted vault. Text you save is stored in this browser profile. Use fictional information while learning.</div>
+        <div class="section-head"><div><span class="eyebrow">Local-only tools</span><h2>Bring in sample information</h2></div></div>
+        <div class="two-column">
+          <section class="panel"><h3>Paste résumé text</h3><p class="tiny">This text stays in memory until you leave or refresh. Convert selected lines into Unverified facts before they can be used.</p><div class="field"><label for="resume-text">Fictional résumé text</label><textarea id="resume-text" placeholder="Paste fictional sample text here…"></textarea></div><button class="button primary" data-action="extract-lines">Create unverified facts from lines</button></section>
+          <section class="panel"><h3>PDF placeholder</h3><p class="tiny">A secure connected version would validate and privately store PDFs. This static prototype only checks the selected filename and size; it does not upload, save, or parse the file.</p><div class="drop-zone"><div class="field"><label for="pdf-local">Choose a fictional PDF</label><input id="pdf-local" type="file" accept="application/pdf,.pdf"></div><p id="pdf-status" class="tiny" aria-live="polite">No file selected.</p></div></section>
         </div>
-      `).join('');
+        <div class="section-head"><div><span class="eyebrow">Atomic fact ledger</span><h2>Confirmed background</h2></div><div class="field"><label for="fact-filter">Show facts</label><select id="fact-filter"><option value="all">All statuses</option>${FACT_STATUSES.map(s=>`<option value="${s}" ${factFilter===s?'selected':''}>${titleCase(s)}</option>`).join('')}</select></div></div>
+        <div class="two-column">
+          <section class="panel"><h3>Add a browser fact</h3><form id="fact-form"><div class="field"><label for="fact-type">Type</label><select id="fact-type" name="type">${FACT_TYPES.map(t=>`<option>${esc(t)}</option>`).join('')}</select></div><div class="field"><label for="fact-text">Exact factual statement</label><textarea id="fact-text" name="text" required maxlength="700"></textarea></div><div class="field"><label for="fact-source">Source or evidence note</label><input id="fact-source" name="source" maxlength="200" placeholder="Fictional self-attested fact"></div><button class="button primary" type="submit">Add as unverified</button></form></section>
+          <section><div class="fact-list">${facts.length?facts.map(factCard).join(''):'<div class="empty-state"><h3>No facts in this view.</h3><p>Change the status filter or add a fictional fact.</p></div>'}</div></section>
+        </div>`;
+      document.getElementById('fact-form').addEventListener('submit', addFact);
+      document.getElementById('fact-filter').addEventListener('change', e=>{factFilter=e.target.value;renderResume();});
+      document.getElementById('pdf-local').addEventListener('change', inspectLocalPdf);
     }
 
-    function renderApplicationsPipeline() {
-      const tbody = document.getElementById('applications-table-body');
-      tbody.innerHTML = appState.opportunities.map(o => `
-        <tr>
-          <td style="font-weight:600;">${escapeHTML(o.company)}</td>
-          <td>${escapeHTML(o.position)}</td>
-          <td style="color:var(--text-muted);">${o.appliedDate || 'Not yet submitted'}</td>
-          <td><span class="status-tag ${o.status === 'Applied' ? 'eligible' : ''}">${escapeHTML(o.status)}</span></td>
-          <td style="font-size:0.8rem; color:var(--text-muted);">${o.status === 'Applied' ? 'Awaiting portal response' : 'Prepare tailored bullet points'}</td>
-          <td style="text-align:right;">
-            <select class="form-select" style="padding:0.25rem; font-size:0.75rem; width:auto;" onchange="updateOppStatus('${o.id}', this.value)">
-              <option value="Not Applied" ${o.status === 'Not Applied' ? 'selected' : ''}>Not Applied</option>
-              <option value="Preparing" ${o.status === 'Preparing' ? 'selected' : ''}>Preparing</option>
-              <option value="Applied" ${o.status === 'Applied' ? 'selected' : ''}>Applied</option>
-            </select>
-          </td>
-        </tr>
-      `).join('');
+    function factCard(fact) {
+      const cls = fact.status==='confirmed'?'status-good':fact.status==='rejected'?'status-bad':fact.status==='superseded'?'status-neutral':'status-warn';
+      return `<article class="fact-card"><div><span class="pill">${esc(fact.type)}</span><p>${esc(fact.text)}</p><div class="fact-meta">${esc(fact.source)} · ID ${esc(fact.id)}</div></div><div class="fact-actions"><span class="status-badge ${cls}">${titleCase(fact.status)}</span><label class="tiny">Status <select data-action="fact-status" data-fact-id="${esc(fact.id)}" aria-label="Status for ${esc(fact.text)}">${FACT_STATUSES.map(s=>`<option value="${s}" ${fact.status===s?'selected':''}>${titleCase(s)}</option>`).join('')}</select></label><button class="button small" data-action="edit-fact" data-fact-id="${esc(fact.id)}">Edit</button><button class="button small danger" data-action="delete-fact" data-fact-id="${esc(fact.id)}">Delete</button></div></article>`;
     }
 
-    function renderDeadlinesTimeline() {
-      const container = document.getElementById('deadlines-timeline-list');
-      const sorted = [...appState.opportunities].sort((a,b) => new Date(a.deadline) - new Date(b.deadline));
-
-      container.innerHTML = sorted.map(o => `
-        <div class="editorial-card" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0;">
-          <div>
-            <div style="font-size:0.75rem; text-transform:uppercase; color:var(--accent-terracotta); font-weight:600;">Cutoff Date: ${escapeHTML(o.deadline)}</div>
-            <h3 style="font-family:var(--font-serif); font-size:1.25rem; margin-top:0.2rem;">${escapeHTML(o.company)} — ${escapeHTML(o.position)}</h3>
-            <p style="font-size:0.825rem; color:var(--text-muted);">${escapeHTML(o.location)}</p>
-          </div>
-          <button class="btn btn-outline btn-sm" onclick="openDrawer('${o.id}')">Inspect & Apply</button>
-        </div>
-      `).join('');
+    function suggestionsFor(job) {
+      const templates = [
+        { id:'budget', original:'Managed money for a student organization.', proposed:'Managed a $12,000 student organization budget and prepared monthly spending updates using Microsoft Excel.', sourceIds:['f3','f4','f5'], reason:`Highlights verified analytical and communication experience relevant to ${job.sector}.` },
+        { id:'outreach', original:'Helped communicate with club members.', proposed:'Coordinated member outreach and presented monthly budget updates to a student audience.', sourceIds:['f4'], reason:'Uses a clearer action verb while preserving the confirmed audience and responsibility.' },
+        { id:'coursework', original:'Took business classes.', proposed:'Completed coursework in Financial Management, Investments, and Business Communication.', sourceIds:['f2'], reason:`Surfaces confirmed coursework related to the role's finance foundation.` },
+        { id:'sie', original:'Interested in finance certifications.', proposed:'Currently preparing for the Securities Industry Essentials (SIE) exam; exam not yet passed.', sourceIds:['f6'], reason:'States the confirmed exam status precisely without implying completion.' }
+      ];
+      return templates.map(s=>({...s, supported:s.sourceIds.every(id=>state.facts.some(f=>f.id===id&&f.status==='confirmed'))}));
     }
 
-    // --- DRAWER & DETAIL INTERACTIONS ---
-    function openDrawer(oppId) {
-      const opp = appState.opportunities.find(o => o.id === oppId);
-      if (!opp) return;
-
-      appState.activeOpportunityId = oppId;
-      const fit = computeCompatibility(opp);
-      const elig = checkEligibility(opp);
-
-      document.getElementById('drawer-company').innerText = opp.company;
-      document.getElementById('drawer-position').innerText = opp.position;
-      document.getElementById('drawer-meta').innerText = `${opp.location} • Deadline: ${opp.deadline}`;
-      document.getElementById('drawer-fit-score').innerText = `${fit.score}%`;
-      document.getElementById('drawer-description').innerText = opp.description;
-      document.getElementById('drawer-url-link').href = opp.url || '#';
-
-      document.getElementById('drawer-match-reason').innerText = 
-        `This role matches your background with ${fit.matched.length} verified qualification alignments found in your primary profile payload.`;
-
-      document.getElementById('drawer-matching-quals').innerHTML = fit.matched.length > 0 
-        ? fit.matched.map(m => `<li class="qualification-item"><span class="qual-icon qual-matched">✓</span> <span>${escapeHTML(m)}</span></li>`).join('')
-        : `<li class="qualification-item"><span class="qual-icon qual-missing">—</span> <span>No direct keyword matches found.</span></li>`;
-
-      document.getElementById('drawer-missing-quals').innerHTML = fit.missing.length > 0 
-        ? fit.missing.map(m => `<li class="qualification-item"><span class="qual-icon qual-missing">✕</span> <span>${escapeHTML(m)}</span></li>`).join('')
-        : `<li class="qualification-item"><span class="qual-icon qual-matched">✓</span> <span>All primary key skills covered.</span></li>`;
-
-      document.getElementById('drawer-recommendations').innerText = fit.missing.length > 0
-        ? `Consider emphasizing transferable quantitative coursework or project experience related to: ${fit.missing.join(', ')}.`
-        : `Your profile payload contains all primary target keywords for this role.`;
-
-      document.getElementById('job-detail-drawer').classList.add('active');
+    function renderTailor() {
+      const savedJobs = state.savedJobIds.map(getJob).filter(Boolean); let selected = getJob(state.selectedTailorJobId);
+      if (!selected || !state.savedJobIds.includes(selected.id)) selected = savedJobs[0];
+      if (selected) state.selectedTailorJobId = selected.id;
+      document.getElementById('view-tailor').innerHTML = `
+        <header class="view-header"><div><span class="eyebrow">Rule-based demo</span><h1 tabindex="-1">Tailor without inventing.</h1><p class="view-intro">Review each wording suggestion against confirmed fictional facts. This prototype does not use AI.</p></div>${selected?'<button class="button primary" data-action="print-resume">Print approved résumé</button>':''}</header>
+        <div class="privacy-card"><strong>These are deterministic sample suggestions—not AI.</strong>Always verify wording yourself. A real tailoring system requires private storage, consent, server validation, and careful human review.</div>
+        <div class="section-head"><div><span class="eyebrow">Target opportunity</span><h2>Select a saved role</h2></div></div>
+        ${savedJobs.length ? `<div class="field" style="max-width:520px"><label for="tailor-job">Saved fictional job</label><select id="tailor-job">${savedJobs.map(j=>`<option value="${esc(j.id)}" ${selected&&selected.id===j.id?'selected':''}>${esc(j.title)} — ${esc(j.company)}</option>`).join('')}</select></div><div class="tailor-layout" style="margin-top:1rem"><section><div id="suggestion-list">${suggestionsFor(selected).map(s=>suggestionCard(selected,s)).join('')}</div></section><section><div id="print-resume" class="resume-sheet">${resumePreview(selected)}</div></section></div>` : `<div class="empty-state"><h3>Save a role first.</h3><p>Visit Discover and save a fictional opportunity before opening the tailoring studio.</p><button class="button primary" data-nav="discover">Discover roles</button></div>`}`;
+      const select = document.getElementById('tailor-job'); if(select) select.addEventListener('change',e=>{state.selectedTailorJobId=e.target.value;saveState();renderTailor();});
     }
 
-    function closeDrawer(e) {
-      document.getElementById('job-detail-drawer').classList.remove('active');
+    function tailoringDecision(jobId, suggestion) {
+      const record = state.tailoring[jobId] && state.tailoring[jobId][suggestion.id];
+      return record && typeof record === 'object' ? { status:allowed(record.status,['pending','accepted','rejected'],'pending'), text:cleanText(record.text,700)||suggestion.proposed } : {status:'pending',text:suggestion.proposed};
     }
 
-    function closeDrawerDirect() {
-      document.getElementById('job-detail-drawer').classList.remove('active');
+    function suggestionCard(job, suggestion) {
+      const decision = tailoringDecision(job.id,suggestion); const facts=suggestion.sourceIds.map(id=>state.facts.find(f=>f.id===id)).filter(Boolean);
+      return `<article class="suggestion-card"><div class="criterion-head"><span class="pill">${suggestion.supported?'Supported':'Blocked'}</span><span class="decision ${decision.status}">${titleCase(decision.status)}</span></div><div class="suggestion-columns"><div><div class="field-label">Original</div><div class="text-box">${esc(suggestion.original)}</div></div><div><div class="field-label">Suggestion</div><div class="text-box proposed">${esc(decision.text)}</div></div></div><p class="tiny" style="margin-top:.75rem"><strong>Why:</strong> ${esc(suggestion.reason)}</p><div class="fact-chips">${facts.map(f=>`<span class="fact-chip">${esc(f.id)} · ${esc(f.type)} · ${titleCase(f.status)}</span>`).join('')}</div><div class="button-row"><button class="button small sage" data-action="tailor-decision" data-decision="accepted" data-job-id="${esc(job.id)}" data-suggestion-id="${esc(suggestion.id)}" ${suggestion.supported?'':'disabled'}>Accept</button><button class="button small danger" data-action="tailor-decision" data-decision="rejected" data-job-id="${esc(job.id)}" data-suggestion-id="${esc(suggestion.id)}">Reject</button><button class="button small" data-action="edit-suggestion" data-job-id="${esc(job.id)}" data-suggestion-id="${esc(suggestion.id)}">Edit wording</button></div>${!suggestion.supported?'<p class="tiny" style="color:var(--danger);margin-top:.6rem">One or more supporting facts are not Confirmed, so acceptance is disabled.</p>':''}</article>`;
     }
 
-    function actionCreateTailoredResume() {
-      const opp = appState.opportunities.find(o => o.id === appState.activeOpportunityId);
-      if (!opp) return;
-
-      const fit = computeCompatibility(opp);
-      const summary = `TAILORED RÉSUMÉ DRAFT FOR ${opp.company.toUpperCase()}\nPosition: ${opp.position}\n\nKey Focus Keywords to Highlight:\n- ${fit.matched.concat(fit.missing).join('\n- ')}\n\nGround Truth Facts Selected:\n${appState.facts.map(f => '• ' + f.text).join('\n')}`;
-
-      // Download plain text draft
-      const blob = new Blob([summary], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `Tailored_Resume_${opp.company.replace(/\s+/g, '_')}.txt`;
-      a.click();
-
-      showToast('Tailored résumé draft generated and saved to downloads.');
+    function resumePreview(job) {
+      const accepted = suggestionsFor(job).map(s=>({s,d:tailoringDecision(job.id,s)})).filter(x=>x.d.status==='accepted'&&x.s.supported);
+      const skills = state.facts.filter(f=>f.status==='confirmed'&&['Skill','Credential'].includes(f.type));
+      return `<div class="fictional-watermark">FICTIONAL DEMO RÉSUMÉ — NOT FOR APPLICATIONS</div><h2>Jordan Lee</h2><p class="contact">San Luis Obispo, CA · jordan@example.test · (555) 010-2027</p><h3>Education</h3><p><strong>California Polytechnic State University</strong> — B.S. Business Administration, Finance concentration<br>Expected May 2028</p><h3>Experience</h3>${accepted.length?`<ul>${accepted.map(x=>`<li>${esc(x.d.text)}</li>`).join('')}</ul>`:'<p><em>No approved tailored bullets yet. Accept supported suggestions to build this preview.</em></p>'}<h3>Skills & development</h3><p>${skills.map(f=>esc(f.text)).join(' · ')||'No confirmed skills selected.'}</p><h3>Target role</h3><p>${esc(job.title)} · ${esc(job.company)} (fictional)</p>`;
     }
 
-    function actionMarkAsApplied() {
-      const opp = appState.opportunities.find(o => o.id === appState.activeOpportunityId);
-      if (opp) {
-        opp.status = 'Applied';
-        opp.appliedDate = new Date().toISOString().split('T')[0];
-        saveState();
-        renderAllViews();
-        closeDrawerDirect();
-        showToast(`Marked ${opp.company} application as submitted.`);
+    function renderTracker() {
+      const grouped = {Preparing:[],Applied:[],Interviewing:[],Other:[]};
+      state.applications.forEach(a=>{const key=['Preparing','Applied','Interviewing'].includes(a.status)?a.status:'Other';grouped[key].push(a);});
+      document.getElementById('view-tracker').innerHTML = `
+        <header class="view-header"><div><span class="eyebrow">Application pipeline</span><h1 tabindex="-1">Keep the next step visible.</h1><p class="view-intro">Track fictional applications, private browser notes, dates, and the résumé version used.</p></div><button class="button primary" data-nav="discover">Add from Discover</button></header>
+        ${state.applications.length?`<div class="tracker-board">${Object.entries(grouped).map(([name,apps])=>`<section class="tracker-column"><h3>${esc(name)} · ${apps.length}</h3>${apps.length?apps.map(trackerCard).join(''):'<p class="tiny">No applications here.</p>'}</section>`).join('')}</div>`:`<div class="empty-state"><h3>Your tracker is empty.</h3><p>Add a fictional job from Discover.</p><button class="button primary" data-nav="discover">Discover roles</button></div>`}`;
+    }
+
+    function trackerCard(app) {
+      const job=getApplicationJob(app); if(!job)return '';
+      return `<article class="tracker-card"><h4>${esc(job.title)}</h4><p>${esc(job.company)} · Fictional</p><label class="tiny">Status<select data-application-field="status" data-application-id="${esc(app.id)}">${APP_STATUSES.map(s=>`<option ${app.status===s?'selected':''}>${esc(s)}</option>`).join('')}</select></label><label class="tiny">Applied date<input type="date" value="${esc(app.appliedDate)}" data-application-field="appliedDate" data-application-id="${esc(app.id)}"></label><label class="tiny">Next action<input value="${esc(app.nextAction)}" maxlength="160" data-application-field="nextAction" data-application-id="${esc(app.id)}"></label><label class="tiny">Next-action date<input type="date" value="${esc(app.nextDate)}" data-application-field="nextDate" data-application-id="${esc(app.id)}"></label><label class="tiny">Private browser notes<textarea maxlength="1000" data-application-field="notes" data-application-id="${esc(app.id)}">${esc(app.notes)}</textarea></label><p class="tiny">Résumé: ${esc(app.resumeVersion||'Not selected')}</p><button class="button small danger" data-action="remove-application" data-application-id="${esc(app.id)}">Remove</button></article>`;
+    }
+
+    function renderPreferences() {
+      const p=state.preferences;
+      document.getElementById('view-preferences').innerHTML = `
+        <header class="view-header"><div><span class="eyebrow">Your priorities</span><h1 tabindex="-1">Define what fit means.</h1><p class="view-intro">These browser settings shape Preference Fit and ranking. They do not affect Documented Alignment.</p></div></header>
+        <div class="two-column"><form class="panel" id="preferences-form">
+          <fieldset><legend>Finance sectors</legend><div class="choice-grid">${SECTORS.map(s=>`<label class="choice"><input type="checkbox" name="sector" value="${esc(s)}" ${p.sectors.includes(s)?'checked':''}> ${esc(s)}</label>`).join('')}</div><label class="choice" style="margin-top:.6rem"><input type="checkbox" name="wealthPriority" ${p.wealthPriority?'checked':''}> Prioritize wealth-management roles</label></fieldset>
+          <fieldset><legend>Location and work mode</legend><div class="field"><label for="pref-locations">Preferred locations, separated by semicolons</label><input id="pref-locations" name="locations" value="${esc(p.locations)}"></div><div class="choice-grid">${ARRANGEMENTS.slice(0,3).map(a=>`<label class="choice"><input type="checkbox" name="arrangement" value="${esc(a)}" ${p.arrangements.includes(a)?'checked':''}> ${esc(a)}</label>`).join('')}</div></fieldset>
+          <fieldset><legend>Compensation and timing</legend><div class="two-column"><div class="field"><label for="pref-pay">Desired minimum hourly pay</label><input id="pref-pay" name="minPay" type="number" min="0" max="200" value="${esc(p.minPay)}"></div><div class="field"><label for="pref-term">Target term</label><input id="pref-term" value="Summer 2027" disabled></div></div></fieldset>
+          <fieldset><legend>Eligibility information</legend><div class="two-column"><div class="field"><label for="pref-grad">Expected graduation year</label><input id="pref-grad" name="gradYear" type="number" min="2026" max="2035" value="${esc(p.gradYear)}"></div><div class="field"><label for="pref-gpa">GPA (optional)</label><input id="pref-gpa" name="gpa" type="number" min="0" max="4" step=".01" value="${esc(p.gpa)}" placeholder="Unknown"></div></div><div class="field"><label for="pref-auth">U.S. work authorization</label><select id="pref-auth" name="workAuthorization"><option value="unknown" ${p.workAuthorization==='unknown'?'selected':''}>Unknown / prefer not to say</option><option value="yes" ${p.workAuthorization==='yes'?'selected':''}>Yes</option><option value="no" ${p.workAuthorization==='no'?'selected':''}>No</option></select></div><p class="tiny">This is an organizational aid, not legal advice or an employer determination.</p></fieldset>
+          <div class="button-row"><button class="button primary" type="submit">Save preferences</button><button class="button" type="button" data-action="restore-preferences">Restore demo defaults</button></div>
+        </form><aside class="panel"><span class="eyebrow">How it is used</span><h2>Preference Fit only</h2><p class="muted">Sector 40% · Geography and work mode 25% · Compensation 20% · Dates 10% · Other 5%.</p><p class="muted">When pay or another job field is missing, Prospect excludes that component, renormalizes known weights, and displays lower data coverage.</p><div class="privacy-card"><strong>Browser storage is not a secure account.</strong>Anyone using this browser profile may be able to see these settings. Clearing site data removes them.</div></aside></div>`;
+      document.getElementById('preferences-form').addEventListener('submit', savePreferences);
+    }
+
+    function renderJobDialog(job) {
+      const scores=scoreJob(job); const saved=state.savedJobIds.includes(job.id);
+      document.getElementById('job-dialog-title').textContent=job.title;
+      document.getElementById('job-dialog-body').innerHTML=`
+        <span class="pill ${job.sector==='Wealth Management'?'wealth-pill':''}">${esc(job.sector)}</span><p class="company" style="margin-top:.6rem">${esc(job.company)} · Fictional</p>
+        <div class="job-meta"><span>⌖ ${esc(job.city)}, ${esc(job.state)} · ${esc(job.arrangement)}</span><span>◷ ${esc(formatPay(job))}</span><span>○ Deadline ${esc(formatDate(job.deadline))}</span><span>Source: ${esc(job.source)} · ${esc(job.lastChecked)}</span></div>
+        <p>${esc(job.description)}</p><h3>Disclosed requirements</h3><ul>${job.requirements.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><h3>Preferred background</h3><ul>${job.preferred.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+        <div class="section-head"><div><span class="eyebrow">Signal A</span><h2>Eligibility review</h2></div>${statusBadge(scores.eligibility)}</div><div class="criteria-list">${scores.eligibility.checks.map(c=>`<div class="criterion"><div class="criterion-head"><strong>${esc(c.label)}</strong><span>${c.status==='good'?'No conflict found':c.status==='bad'?'Potential conflict':'More information needed'}</span></div><p>${esc(c.detail)}</p></div>`).join('')}</div>
+        <div class="section-head"><div><span class="eyebrow">Signal B</span><h2>${scores.alignment.score}% documented alignment</h2></div><span class="tiny">${scores.alignment.coverage}% evidence coverage</span></div><div class="criteria-list">${scores.alignment.rows.map(row=>`<div class="criterion"><div class="criterion-head"><strong>${esc(row.criterion.label)} · ${row.criterion.weight}%</strong><span>${esc(row.evidence.label)} · ${Math.round(row.evidence.value*row.criterion.weight)} pts</span></div><div class="score-bar"><span style="width:${row.evidence.value*100}%"></span></div><p>${row.evidence.fact?`Evidence ${esc(row.evidence.fact.id)}: ${esc(row.evidence.fact.text)}`:'No confirmed fact currently supports this criterion.'}</p></div>`).join('')}</div>
+        <div class="section-head"><div><span class="eyebrow">Signal C</span><h2>${scores.preference.score}% Preference Fit</h2></div><span class="tiny">${scores.preference.coverage}% data coverage</span></div><div class="criteria-list">${scores.preference.components.map(c=>`<div class="criterion"><div class="criterion-head"><strong>${esc(c.label)} · ${c.weight}%</strong><span>${c.known?`${Math.round(c.value*100)}% fit`:'Not disclosed'}</span></div></div>`).join('')}</div>
+        <p class="privacy-card" style="margin-top:1rem"><strong>Not a hiring prediction</strong>These signals organize disclosed information and confirmed evidence. They do not estimate your chance of receiving an interview or offer.</p>
+        <div class="button-row"><button class="button ${saved?'sage':''}" data-action="toggle-save" data-job-id="${esc(job.id)}">${saved?'Saved':'Save job'}</button><button class="button" data-action="track-job" data-job-id="${esc(job.id)}">Add to tracker</button><button class="button primary" data-action="tailor-job" data-job-id="${esc(job.id)}">Open tailoring</button>${job.manual?`<button class="button danger" data-action="delete-manual-job" data-job-id="${esc(job.id)}">Delete manual job</button>`:''}</div>`;
+    }
+
+    function renderAll() {
+      renderDashboard(); renderDiscover(); renderResume(); renderTailor(); renderTracker(); renderPreferences(); setView(activeView,false,false);
+      document.getElementById('manual-sector').innerHTML=SECTORS.map(s=>`<option>${esc(s)}</option>`).join('');
+    }
+
+    // -------------------------------------------------------------------------
+    // Interactions
+    // -------------------------------------------------------------------------
+    function setView(view, updateHash=true, focusHeading=true) {
+      if(!validView(view)) view='dashboard'; activeView=view;
+      document.querySelectorAll('[data-view-panel]').forEach(panel=>panel.hidden=panel.dataset.viewPanel!==view);
+      document.querySelectorAll('[data-nav]').forEach(button=>{if(button.matches('button')) button.setAttribute('aria-current',button.dataset.nav===view?'page':'false');});
+      if(updateHash) history.replaceState(null,'',`#${view}`);
+      const mobile=document.getElementById('mobile-menu'); mobile.hidden=true; document.getElementById('menu-button').setAttribute('aria-expanded','false');
+      const heading=document.querySelector(`[data-view-panel="${view}"] h1`); if(heading && focusHeading) setTimeout(()=>heading.focus({preventScroll:true}),0);
+      if(focusHeading) window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    function toast(message) {
+      const region=document.getElementById('toast-region'); if(!region)return;
+      const item=document.createElement('div'); item.className='toast'; item.textContent=message; region.appendChild(item); setTimeout(()=>item.remove(),3200);
+    }
+
+    function attachFilterListeners() {
+      const form=document.getElementById('filter-form'); if(!form)return;
+      form.addEventListener('input',event=>{const activeId=event.target.id;const selection=typeof event.target.selectionStart==='number'?event.target.selectionStart:null;const data=new FormData(form);filters={...filters,search:cleanText(data.get('search'),100),sector:cleanText(data.get('sector'),50)||'all',location:cleanText(data.get('location'),80),arrangement:cleanText(data.get('arrangement'),30)||'all',minPay:cleanText(data.get('minPay'),10),savedOnly:data.get('savedOnly')==='on'};renderDiscover();const replacement=activeId&&document.getElementById(activeId);if(replacement){replacement.focus();if(selection!==null&&replacement.setSelectionRange)replacement.setSelectionRange(selection,selection);}});
+      const sort=document.getElementById('sort-jobs'); sort.addEventListener('change',e=>{filters.sort=e.target.value;renderDiscover();});
+    }
+
+    function addFact(event) {
+      event.preventDefault(); const data=new FormData(event.currentTarget); const text=cleanText(data.get('text'),700); if(!text)return;
+      state.facts.unshift({id:`user_${Date.now().toString(36)}`,type:allowed(data.get('type'),FACT_TYPES,'Experience'),text,status:'unverified',source:cleanText(data.get('source'),200)||'User-entered browser fact'});
+      saveState('Fact added as Unverified.'); renderAll(); setView('resume',false,false);
+    }
+
+    function inspectLocalPdf(event) {
+      const output=document.getElementById('pdf-status'); const file=event.target.files&&event.target.files[0];
+      if(!file){output.textContent='No file selected.';return;} const isPdf=file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf');
+      if(!isPdf){output.textContent='That file does not appear to be a PDF.';event.target.value='';return;}
+      if(file.size>5*1024*1024){output.textContent='That file exceeds the 5 MB prototype limit.';event.target.value='';return;}
+      output.textContent=`Selected locally: ${file.name} (${(file.size/1024).toFixed(1)} KB). It was not uploaded, saved, or parsed.`;
+    }
+
+    function savePreferences(event) {
+      event.preventDefault(); const data=new FormData(event.currentTarget); const sectors=data.getAll('sector').filter(s=>SECTORS.includes(s)); const arrangements=data.getAll('arrangement').filter(a=>ARRANGEMENTS.includes(a));
+      state.preferences={sectors,locations:cleanText(data.get('locations'),300)||'Nationwide',arrangements,minPay:clampNumber(data.get('minPay'),0,200,25),targetTerm:'Summer 2027',gradYear:Math.round(clampNumber(data.get('gradYear'),2026,2035,2028)),workAuthorization:allowed(data.get('workAuthorization'),['yes','no','unknown'],'unknown'),gpa:data.get('gpa')===''?'':clampNumber(data.get('gpa'),0,4,''),wealthPriority:data.get('wealthPriority')==='on'};
+      saveState('Preferences saved in this browser.'); renderAll(); setView('preferences',false,false);
+    }
+
+    function toggleSave(jobId) {
+      const index=state.savedJobIds.indexOf(jobId); if(index>=0){state.savedJobIds.splice(index,1);toast('Job removed from saved roles.');}else{state.savedJobIds.push(jobId);toast('Job saved in this browser.');}
+      saveState(); renderAll();
+    }
+
+    function trackJob(jobId) {
+      if(state.applications.some(a=>a.jobId===jobId)){toast('That role is already in your tracker.');setView('tracker');return;}
+      const job=getJob(jobId);
+      state.applications.unshift({id:`app_${Date.now().toString(36)}`,jobId,status:'Saved',appliedDate:'',nextAction:'Review job criteria',nextDate:'',notes:'',resumeVersion:'Not selected',jobSnapshot:job?clone(job):null});
+      if(!state.savedJobIds.includes(jobId))state.savedJobIds.push(jobId); saveState('Job added to the application tracker.'); renderAll(); setView('tracker');
+    }
+
+    function updateFactStatus(id,status) { const fact=state.facts.find(f=>f.id===id); if(fact){fact.status=allowed(status,FACT_STATUSES,'unverified');saveState('Fact status updated.');renderAll();setView('resume',false,false);} }
+    function editFact(id) { const fact=state.facts.find(f=>f.id===id); if(!fact)return; const value=prompt('Create a revised version of this fictional fact. The new version will be Unverified:',fact.text); if(value===null)return; const text=cleanText(value,700).trim(); if(!text){toast('A fact cannot be empty.');return;} fact.status='superseded';state.facts.unshift({id:`revision_${Date.now().toString(36)}`,type:fact.type,text,status:'unverified',source:`Revision of fact ${fact.id}`});saveState('A new fact revision was added as Unverified.');renderAll();setView('resume',false,false); }
+    function deleteFact(id) { if(!confirm('Delete this browser-only fact?'))return; state.facts=state.facts.filter(f=>f.id!==id);saveState('Fact deleted.');renderAll();setView('resume',false,false); }
+
+    function updateTailoring(jobId,suggestionId,status) {
+      const job=getJob(jobId); if(!job)return; const suggestion=suggestionsFor(job).find(s=>s.id===suggestionId); if(!suggestion)return;
+      if(status==='accepted'&&!suggestion.supported){toast('Confirm every supporting fact before accepting this edit.');return;}
+      if(!state.tailoring[jobId])state.tailoring[jobId]={}; const current=tailoringDecision(jobId,suggestion); state.tailoring[jobId][suggestionId]={status,text:current.text}; saveState(`Suggestion ${status}.`);renderAll();setView('tailor',false,false);
+    }
+
+    function editSuggestion(jobId,suggestionId) {
+      const job=getJob(jobId); if(!job)return;const suggestion=suggestionsFor(job).find(s=>s.id===suggestionId);if(!suggestion)return;const current=tailoringDecision(jobId,suggestion);
+      const value=prompt('Edit the wording. Do not introduce facts, numbers, titles, or credentials that are not confirmed:',current.text);if(value===null)return;const text=cleanText(value,700).trim();if(!text)return;
+      const allowedNumbers=suggestion.sourceIds.map(id=>state.facts.find(f=>f.id===id)).filter(Boolean).flatMap(f=>f.text.match(/\$?\d[\d,.]*/g)||[]).map(x=>x.replace(/[^\d.]/g,''));
+      const proposedNumbers=(text.match(/\$?\d[\d,.]*/g)||[]).map(x=>x.replace(/[^\d.]/g,''));
+      if(proposedNumbers.some(n=>!allowedNumbers.includes(n))){toast('Edit blocked: it introduces a number not found in the supporting facts.');return;}
+      if(!state.tailoring[jobId])state.tailoring[jobId]={};state.tailoring[jobId][suggestionId]={status:'pending',text};saveState('Edited wording saved as Pending review.');renderAll();setView('tailor',false,false);
+    }
+
+    function submitManualJob(event) {
+      event.preventDefault();const data=new FormData(event.currentTarget);const requirements=cleanText(data.get('requirements'),1200).split(/\n/).map(x=>x.trim()).filter(Boolean).slice(0,12);const pay=data.get('pay')===''?null:clampNumber(data.get('pay'),0,200,null);const sector=allowed(data.get('sector'),SECTORS,'Wealth Management');
+      const job=normalizeManualJob({id:`manual_${Date.now().toString(36)}`,title:data.get('title'),company:data.get('company'),sector,arrangement:data.get('arrangement'),city:data.get('city'),state:data.get('state'),payMin:pay,payMax:pay,deadline:data.get('deadline'),description:data.get('description'),requirements});
+      if(!job){toast('Please complete the required job fields.');return;}state.manualJobs.unshift(job);saveState('Manual browser job added.');event.currentTarget.reset();document.getElementById('manual-job-dialog').close();renderAll();setView('discover',false,false);
+    }
+
+    document.addEventListener('click',event=>{
+      const nav=event.target.closest('[data-nav]');if(nav){event.preventDefault();setView(nav.dataset.nav);return;}
+      const close=event.target.closest('[data-close-dialog]');if(close){document.getElementById(close.dataset.closeDialog).close();return;}
+      const action=event.target.closest('[data-action]');if(!action)return;const jobId=cleanId(action.dataset.jobId);const appId=cleanId(action.dataset.applicationId);const factId=cleanId(action.dataset.factId);
+      switch(action.dataset.action){
+        case 'toggle-save':toggleSave(jobId);break;
+        case 'track-job':trackJob(jobId);break;
+        case 'view-job':{const job=getJob(jobId);if(job){lastDialogTrigger=action;renderJobDialog(job);document.getElementById('job-dialog').showModal();}}break;
+        case 'open-manual-job':lastDialogTrigger=action;document.getElementById('manual-job-dialog').showModal();break;
+        case 'reset-filters':filters={search:'',sector:'all',location:'',arrangement:'all',minPay:'',savedOnly:false,sort:'recommended'};renderDiscover();break;
+        case 'restore-facts':if(confirm('Restore the fictional fact sample? Your added facts will be replaced.')){state.facts=clone(seedFacts);state.tailoring={};saveState('Fictional facts restored.');renderAll();setView('resume',false,false);}break;
+        case 'extract-lines':{const area=document.getElementById('resume-text');const lines=area.value.split(/\n/).map(x=>cleanText(x.trim(),700)).filter(x=>x.length>=12).slice(0,12);if(!lines.length){toast('Add at least one meaningful fictional line first.');break;}lines.reverse().forEach((text,i)=>state.facts.unshift({id:`paste_${Date.now().toString(36)}_${i}`,type:'Experience',text,status:'unverified',source:'Pasted fictional text'}));area.value='';saveState(`${lines.length} line${lines.length===1?'':'s'} added as Unverified.`);renderAll();setView('resume',false,false);}break;
+        case 'edit-fact':editFact(factId);break;
+        case 'delete-fact':deleteFact(factId);break;
+        case 'tailor-job':state.selectedTailorJobId=jobId;if(!state.savedJobIds.includes(jobId))state.savedJobIds.push(jobId);saveState();document.getElementById('job-dialog').close();renderAll();setView('tailor');break;
+        case 'tailor-decision':updateTailoring(jobId,cleanId(action.dataset.suggestionId),action.dataset.decision);break;
+        case 'edit-suggestion':editSuggestion(jobId,cleanId(action.dataset.suggestionId));break;
+        case 'print-resume':window.print();break;
+        case 'remove-application':if(confirm('Remove this browser-only application record?')){state.applications=state.applications.filter(a=>a.id!==appId);saveState('Application removed.');renderAll();setView('tracker',false);}break;
+        case 'restore-preferences':state.preferences=clone(defaultPreferences);saveState('Demo preferences restored.');renderAll();setView('preferences',false);break;
+        case 'delete-manual-job':if(confirm('Delete this manually entered browser job? Existing tracker records keep a saved snapshot.')){state.manualJobs=state.manualJobs.filter(j=>j.id!==jobId);state.savedJobIds=state.savedJobIds.filter(id=>id!==jobId);saveState('Manual job deleted; tracker snapshots were preserved.');document.getElementById('job-dialog').close();renderAll();setView('discover',false,false);}break;
       }
-    }
+    });
 
-    function updateOppStatus(id, newStatus) {
-      const opp = appState.opportunities.find(o => o.id === id);
-      if (opp) {
-        opp.status = newStatus;
-        if (newStatus === 'Applied') opp.appliedDate = new Date().toISOString().split('T')[0];
-        saveState();
-        renderAllViews();
-        showToast('Application status updated.');
-      }
-    }
+    document.addEventListener('change',event=>{
+      const factSelect=event.target.closest('[data-action="fact-status"]');if(factSelect){updateFactStatus(cleanId(factSelect.dataset.factId),factSelect.value);return;}
+      const input=event.target.closest('[data-application-field]');if(input){const app=state.applications.find(a=>a.id===cleanId(input.dataset.applicationId));if(app){const field=input.dataset.applicationField;const limits={status:30,appliedDate:10,nextAction:160,nextDate:10,notes:1000};app[field]=field==='status'?allowed(input.value,APP_STATUSES,'Saved'):cleanText(input.value,limits[field]||200);saveState('Application updated.');renderDashboard();}}
+    });
 
-    // --- PDF / TXT FILE UPLOAD & PARSING ---
-    async function handleFileUpload(e) {
-      const file = e.target.files[0];
-      if (!file) return;
+    document.getElementById('manual-job-form').addEventListener('submit',submitManualJob);
+    document.getElementById('menu-button').addEventListener('click',event=>{const menu=document.getElementById('mobile-menu');menu.hidden=!menu.hidden;event.currentTarget.setAttribute('aria-expanded',String(!menu.hidden));});
+    document.getElementById('reset-demo').addEventListener('click',()=>{if(confirm('Reset only Prospect demo data in this browser?')){localStorage.removeItem(STORAGE_KEY);state=initialState();filters={search:'',sector:'all',location:'',arrangement:'all',minPay:'',savedOnly:false,sort:'recommended'};saveState('Demo data reset.');renderAll();setView('dashboard');}});
+    window.addEventListener('hashchange',()=>{const view=location.hash.slice(1);if(validView(view))setView(view,false);});
+    document.querySelectorAll('dialog').forEach(dialog=>dialog.addEventListener('close',()=>{if(lastDialogTrigger){lastDialogTrigger.focus();lastDialogTrigger=null;}}));
+    document.addEventListener('keydown',event=>{if(event.key==='Escape'){const menu=document.getElementById('mobile-menu');if(!menu.hidden){menu.hidden=true;document.getElementById('menu-button').setAttribute('aria-expanded','false');}}});
+    window.addEventListener('storage',event=>{if(event.key===STORAGE_KEY){state=loadState();renderAll();toast('Prospect data was updated in another tab.');}});
 
-      showToast(`Ingesting ${file.name}...`);
-
-      if (file.type === 'application/pdf') {
-        try {
-          const arrayBuffer = await file.arrayBuffer();
-          const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-          let fullText = '';
-
-          for (let i = 1; i <= pdf.numPages; i++) {
-            const page = await pdf.getPage(i);
-            const tokenized = await page.getTextContent();
-            const pageText = tokenized.items.map(item => item.str).join(' ');
-            fullText += pageText + '\n';
-          }
-
-          appState.masterResumeText = fullText;
-          document.getElementById('master-resume-text').value = fullText;
-          saveState();
-          syncProfileFieldsToUI();
-          renderAllViews();
-          showToast('PDF résumé parsed successfully in-browser.');
-        } catch (err) {
-          console.error(err);
-          showToast('Unable to parse PDF. Please try pasting text manually.');
-        }
-      } else {
-        const text = await file.text();
-        appState.masterResumeText = text;
-        document.getElementById('master-resume-text').value = text;
-        saveState();
-        syncProfileFieldsToUI();
-        renderAllViews();
-        showToast('Text file loaded successfully.');
-      }
-    }
-
-    function saveMasterResumeText() {
-      const val = document.getElementById('master-resume-text').value;
-      appState.masterResumeText = val;
-      saveState();
-      syncProfileFieldsToUI();
-      renderAllViews();
-      showToast('Master résumé payload saved.');
-    }
-
-    // --- FACT BANK ACTIONS ---
-    function addVerifiedFact() {
-      const factText = prompt('Enter a ground-truth verified fact (e.g. "Passed SIE Exam in June 2026"):');
-      if (factText && factText.trim()) {
-        appState.facts.push({
-          id: 'f-' + Date.now(),
-          text: factText.trim(),
-          category: 'User Added'
-        });
-        saveState();
-        renderFactInventory();
-        renderAllViews();
-        showToast('Verified fact appended to ground bank.');
-      }
-    }
-
-    function removeFact(idx) {
-      appState.facts.splice(idx, 1);
-      saveState();
-      renderFactInventory();
-      renderAllViews();
-      showToast('Fact removed.');
-    }
-
-    // --- PROFILE FORM SAVE ---
-    function saveProfileForm(e) {
-      e.preventDefault();
-      appState.profile = {
-        fullName: document.getElementById('prof-fullName').value.trim(),
-        email: document.getElementById('prof-email').value.trim(),
-        school: document.getElementById('prof-school').value.trim(),
-        major: document.getElementById('prof-major').value.trim(),
-        gradDate: document.getElementById('prof-gradDate').value.trim(),
-        workAuth: document.getElementById('prof-workAuth').value,
-        locations: document.getElementById('prof-locations').value.trim()
-      };
-      saveState();
-      syncProfileFieldsToUI();
-      showToast('Profile settings saved successfully.');
-    }
-
-    // --- CUSTOM ROLE SUBMISSION ---
-    function submitCustomRole() {
-      const company = document.getElementById('add-role-company').value.trim();
-      const position = document.getElementById('add-role-title').value.trim();
-      const location = document.getElementById('add-role-location').value.trim() || 'Unspecified';
-      const deadline = document.getElementById('add-role-deadline').value || '2026-11-30';
-      const url = document.getElementById('add-role-url').value.trim();
-      const desc = document.getElementById('add-role-desc').value.trim();
-
-      if (!company || !position || !desc) {
-        showToast('Please complete Company, Position, and Description.');
-        return;
-      }
-
-      // Extract basic financial keywords
-      const words = desc.toLowerCase().match(/\b[a-z]{4,}\b/g) || [];
-      const common = ['wealth', 'asset', 'portfolio', 'financial', 'modeling', 'excel', 'analysis', 'client', 'estate', 'trust', 'python'];
-      const extracted = Array.from(new Set(words.filter(w => common.includes(w)))).slice(0, 6);
-
-      const newRole = {
-        id: 'opp-' + Date.now(),
-        company,
-        position,
-        location,
-        postedDate: new Date().toISOString().split('T')[0],
-        deadline,
-        url,
-        description: desc,
-        keywords: extracted.length > 0 ? extracted : ['finance', 'wealth management'],
-        status: 'Not Applied',
-        gradRequirement: appState.profile.gradDate
-      };
-
-      appState.opportunities.unshift(newRole);
-      saveState();
-      renderAllViews();
-      closeModal('add-role-modal');
-      showToast('New target internship saved to directory.');
-    }
-
-    // --- UTILITY MODALS & TOASTS ---
-    function openModal(id) {
-      document.getElementById(id).classList.add('active');
-    }
-
-    function closeModal(id) {
-      document.getElementById(id).classList.remove('active');
-    }
-
-    function showToast(msg) {
-      const container = document.getElementById('toast-container');
-      const toast = document.createElement('div');
-      toast.className = 'toast';
-      toast.innerText = msg;
-      container.appendChild(toast);
-      setTimeout(() => {
-        toast.remove();
-      }, 3200);
-    }
-
-    function saveApiKey(key) {
-      localStorage.setItem('aesop_copilot_llm_key', key);
-      showToast('API key updated.');
-    }
-
-    function escapeHTML(str) {
-      if (!str) return '';
-      return str.replace(/[&<>'"]/g, 
-        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-      );
-    }
+    renderAll();
   </script>
 </body>
 </html>
